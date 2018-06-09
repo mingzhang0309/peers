@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry location="/Users/zhangming/.m2/repository/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar" />
+
+    <context id="MysqlContext" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <!--<commentGenerator type="org.mybatis.generator.internal.MyCommentGenerator">-->
+            <!--&lt;!&ndash;<property name="suppressAllComments" value="true"/>&ndash;&gt;-->
+            <!--<property name="suppressDate" value="true"/>-->
+        <!--</commentGenerator>-->
+        <!--数据库链接URL，用户名、密码 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/peer"
+                        userId="root"
+                        password="">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+        <!-- 生成模型的包名和位置-->
+        <javaModelGenerator targetPackage="com.peer.dog.dao.entity" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+        <!-- 生成映射文件的包名和位置-->
+        <sqlMapGenerator targetPackage="mybatis/mapping"  targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+        <!-- 生成DAO的包名和位置-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.peer.dog.dao"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <table tableName="%">
+            <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        </table>
+
+        <!--
+            <table schema="DB2ADMIN" tableName="ALLTYPES" domainObjectName="Customer" >
+              <property name="useActualColumnNames" value="true"/>
+              <generatedKey column="ID" sqlStatement="DB2" identity="true" />
+              <columnOverride column="DATE_FIELD" property="startDate" />
+              <ignoreColumn column="FRED" />
+              <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />
+            </table>
+         -->
+    </context>
+</generatorConfiguration>

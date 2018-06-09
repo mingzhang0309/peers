@@ -1,12 +1,14 @@
 package com.peer.dog;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DogApplication {
+@MapperScan(basePackages = "com.peer.dog.dao")
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DogApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 }
