@@ -1,9 +1,8 @@
 SET NAMES utf8;
 CREATE DATABASE peer DEFAULT CHARACTER SET utf8;
-USE peer;
 
-SET NAMES utf8;
 USE peer;
+SET NAMES utf8;
 
 CREATE TABLE `tb_login`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -13,8 +12,8 @@ CREATE TABLE `tb_login`(
 	`device_sign` VARCHAR(32) NOT NULL default '' COMMENT '浏览器标识或者手机标识',
 	`login_type` TINYINT(1) NOT NULL COMMENT '手机短信登录、账号密码登录、oauth登录等',
 	`ip` VARCHAR(16) NOT NULL default '' COMMENT 'ip',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
-	`expire_time` DATETIME NOT NULL COMMENT '过期时间',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`expire_time` TIMESTAMP NOT NULL COMMENT '过期时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
 	UNIQUE uniq_token(`token`)
@@ -26,8 +25,8 @@ CREATE TABLE `tb_captcha`(
 	`phone` VARCHAR(16) NOT NULL COMMENT '手机号',
 	`value` VARCHAR(4) NOT NULL COMMENT '验证码值',
 	`content` VARCHAR(128) NOT NULL COMMENT '验证短信内容',
-	`try_count` TINYINT(1) NOT NULL COMMENT '验证次数',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`try_count` INT(2) NOT NULL DEFAULT 0 COMMENT '验证次数',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
 	UNIQUE uniq_session_id(`session_id`),
@@ -42,7 +41,7 @@ CREATE TABLE `peer`(
 	`owner_id` INT(11) UNSIGNED NOT NULL COMMENT '主人id',
 	`peer_head_url` VARCHAR(256) NOT NULL COMMENT '宠物头像url',
 	`peer_tag` VARCHAR(128) NOT NULL COMMENT '宠物标签',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
 	UNIQUE uniq_owner_id(`owner_id`)
@@ -50,12 +49,13 @@ CREATE TABLE `peer`(
 
 CREATE TABLE `peer_user`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`phone` VARCHAR(16) NOT NULL COMMENT '手机号',
 	`nick` VARCHAR(32) NOT NULL COMMENT '用户nick',
 	`introduction` VARCHAR(256) NOT NULL COMMENT '用户简介',
 	`is_master` TINYINT(1) NOT NULL COMMENT '是否是主要主人',
 	`peer_id` INT(11) UNSIGNED NOT NULL COMMENT '关联宠物id',
 	`password` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
 	UNIQUE uniq_peer_id(`peer_id`)
@@ -70,7 +70,7 @@ CREATE TABLE `feed_base`(
 	`comment_count` INT(11) NOT NULL DEFAULT 0 COMMENT 'feed评论数',
 	`owner_id` INT(11) UNSIGNED NOT NULL COMMENT 'feed发布人',
 	`location` VARCHAR(32) NOT NULL COMMENT '定位信息',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
 	UNIQUE uniq_peer_id(`peer_id`),
@@ -83,7 +83,7 @@ CREATE TABLE `feed_message`(
 	`name` VARCHAR(32) NOT NULL COMMENT '留言用户nick',
 	`message` VARCHAR(512) NOT NULL COMMENT '留言内容',
 	`parent_id` INT(11) UNSIGNED NOT NULL COMMENT '父留言id，为-1则本身是父留言',
-	`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
 	UNIQUE uniq_feed_id(`feed_id`)

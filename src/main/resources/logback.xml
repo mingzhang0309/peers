@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+
+	<contextName>${HOSTNAME}</contextName>
+
+	<!-- 设置日志输出根目录 -->
+	<property name="log.dir" value="${catalina.base}/logs" />
+
+	<property name="encoding" value="UTF-8" />
+	<property name="normal-pattern"
+		value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger.%M:%L  %msg%n" />
+	<property name="plain-pattern" value="%d{yyyy-MM-dd HH:mm:ss} %msg%n" />
+
+	<!-- log file default -->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="UTF-8">
+			<pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %c{20}:%L] %X{QTRACER} [%thread] [%X{userName}] [%X{orderNo}] %-5level %logger{0} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<appender name="info"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<prudent>true</prudent>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${normal-pattern}</pattern>
+			<charset>${encoding}</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.dir}/ucenter.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+	</appender>
+
+	<appender name="error"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<prudent>true</prudent>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${normal-pattern}</pattern>
+			<charset>${encoding}</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.dir}/error.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+	</appender>
+
+    <root level="info">
+		<appender-ref ref="info" />
+		<appender-ref ref="error" />
+	</root>
+
+</configuration>
