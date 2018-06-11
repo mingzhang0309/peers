@@ -87,4 +87,26 @@ public class UserControllerV1 {
 
         return BaseResponseVO.SuccessResponse(true);
     }
+
+    @PostMapping("/pass/post")
+    public BaseResponseVO setPass(@RequestBody LoginRequest loginRequest) {
+        PeerUser peerUser = new PeerUser();
+        peerUser.setPhone(loginRequest.getPhone());
+        peerUser.setPassword(loginRequest.getPassword());
+        peerUserMapper.insert(peerUser);
+        return BaseResponseVO.SuccessResponse(true);
+    }
+
+    @PostMapping("/info/post")
+    public BaseResponseVO setInfos(@RequestBody UserInfoVo userInfoVo) {
+        PeerUser peerUser = new PeerUser();
+        peerUser.setNick(userInfoVo.getNick());
+        peerUser.setIntroduction(userInfoVo.getIntroduction());
+
+        PeerUserExample example = new PeerUserExample();
+        example.createCriteria().andPhoneEqualTo(userInfoVo.getPhone());
+        peerUserMapper.updateByExampleSelective(peerUser, example);
+
+        return BaseResponseVO.SuccessResponse(true);
+    }
 }
