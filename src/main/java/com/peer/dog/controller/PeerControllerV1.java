@@ -2,9 +2,11 @@ package com.peer.dog.controller;
 
 import com.peer.dog.dao.PeerMapper;
 import com.peer.dog.dao.PeerUserMapper;
+import com.peer.dog.dao.UserPeerRelaMapper;
 import com.peer.dog.dao.entity.Peer;
 import com.peer.dog.dao.entity.PeerUser;
 import com.peer.dog.dao.entity.PeerUserExample;
+import com.peer.dog.dao.entity.UserPeerRela;
 import com.peer.dog.pojo.BaseResponseVO;
 import com.peer.dog.pojo.PeerInfoVo;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,9 @@ public class PeerControllerV1 {
     @Resource
     PeerUserMapper peerUserMapper;
 
+    @Resource
+    UserPeerRelaMapper userPeerRelaMapper;
+
     @PostMapping("/info/post")
     public BaseResponseVO setInfos(@RequestBody PeerInfoVo peerInfoVo) {
         Peer peer = new Peer();
@@ -44,11 +49,12 @@ public class PeerControllerV1 {
         peer.setOwnerId(peerUsers.get(0).getId());
         int peerId = peerMapper.insert(peer);
 
-        //修改用户信息
-        PeerUser peerUser = new PeerUser();
-        peerUser.setPeerId(peerId);
-        peerUser.setIsMaster(true);
-        peerUserMapper.updateByExampleSelective(peerUser, example);
+        //修改用户宠物关联信息
+        UserPeerRela userPeerRela = new UserPeerRela();
+        userPeerRela.setPeerId(peerId);
+        userPeerRela.setUserId(peer.getOwnerId());
+        userPeerRela.setRela(0);
+        userPeerRelaMapper.insertSelective(userPeerRela);
 
         return BaseResponseVO.SuccessResponse(true);
     }

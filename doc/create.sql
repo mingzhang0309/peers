@@ -52,8 +52,6 @@ CREATE TABLE `peer_user`(
 	`phone` VARCHAR(16) NOT NULL COMMENT '手机号',
 	`nick` VARCHAR(32) NOT NULL COMMENT '用户nick',
 	`introduction` VARCHAR(256) NOT NULL COMMENT '用户简介',
-	`is_master` TINYINT(1) NOT NULL COMMENT '是否是主要主人',
-	`peer_id` INT(11) UNSIGNED NOT NULL COMMENT '关联宠物id',
 	`password` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
@@ -89,5 +87,14 @@ CREATE TABLE `feed_message`(
 	UNIQUE uniq_feed_id(`feed_id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'feed留言表';
 
+CREATE TABLE `user_peer_rela`(
+	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`user_id` INT(11) NOT NULL COMMENT '用户id',
+	`peer_id` INT(11) NOT NULL COMMENT '宠物id',
+	`rela` INT(4) NOT NULL COMMENT '0-owner 1-follower',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+	PRIMARY KEY (`id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT '用户宠物关系表';
 
 
