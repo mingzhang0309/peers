@@ -2,6 +2,7 @@ package com.peer.dog.controller;
 
 import com.peer.dog.dao.PeerMapper;
 import com.peer.dog.dao.PeerUserMapper;
+import com.peer.dog.dao.PeerVarietiesMapper;
 import com.peer.dog.dao.UserPeerRelaMapper;
 import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.BaseResponseVO;
@@ -26,6 +27,9 @@ public class PeerControllerV1 {
 
     @Resource
     UserPeerRelaMapper userPeerRelaMapper;
+
+    @Resource
+    PeerVarietiesMapper peerVarietiesMapper;
 
     @PostMapping("/info/post")
     public BaseResponseVO setInfos(@RequestBody PeerInfoVo peerInfoVo) {
@@ -73,5 +77,11 @@ public class PeerControllerV1 {
         List<UserPeerRela> userPeerRelas = userPeerRelaMapper.selectByExample(example);
         peerInfoVo.setOwnId(userPeerRelas.get(0).getUserId());
         return BaseResponseVO.SuccessResponse(peerInfoVo);
+    }
+
+    @GetMapping("/varieties")
+    public BaseResponseVO getVarieties() {
+        List<PeerVarieties> peerVarieties = peerVarietiesMapper.selectByExample(null);
+        return BaseResponseVO.SuccessResponse(peerVarieties);
     }
 }
