@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * @date 2018/6/15.
  */
 @RestController
-@RequestMapping("v1/comment")
+@RequestMapping("comment")
 public class CommentsController {
     @Resource
     FeedCommentsService feedCommentsService;

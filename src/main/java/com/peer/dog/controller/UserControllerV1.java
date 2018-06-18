@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,6 +82,7 @@ public class UserControllerV1 {
             TbLogin tbLogin = new TbLogin();
             tbLogin.setUserId(peerUsers.get(0).getId());
             tbLogin.setToken(BaseUtil.uuidGen());
+            tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
             tbLoginMapper.insertSelective(tbLogin);
             return BaseResponseVO.SuccessResponse(true);
         }

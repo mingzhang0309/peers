@@ -1,5 +1,7 @@
 package com.peer.dog.pojo;
 
+import com.peer.dog.util.HttpHeaderUtil;
+
 import java.io.Serializable;
 
 /**
