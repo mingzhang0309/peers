@@ -84,6 +84,17 @@ CREATE TABLE `feed_base`(
 	KEY idx_owner_id(`owner_id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'feed流基础表';
 
+CREATE TABLE `feed_pick`(
+	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`feed_id` INT(11) NOT NULL COMMENT 'feed id',
+	`user_id` INT(11) NOT NULL COMMENT '点赞用户id',
+	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+	PRIMARY KEY (`id`),
+	KEY idx_feed_id(`feed_id`),
+	KEY idx_user_id(`user_id`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'feed点赞表';
+
 CREATE TABLE `feed_message`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`feed_id` INT(11) NOT NULL COMMENT 'feed标识',
