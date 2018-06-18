@@ -6,7 +6,9 @@ import com.peer.dog.dao.TbLoginMapper;
 import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.*;
 import com.peer.dog.util.BaseUtil;
+import com.peer.dog.util.CapthaUtil;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,7 +22,7 @@ import static com.peer.dog.util.MessageUtil.GET_CAPTCHA_MESSAGE;
  * Created by stephen.zhang on 2018/5/30.
  */
 @RestController
-@RequestMapping("v1/user")
+@RequestMapping("user")
 public class UserControllerV1 {
     @Resource
     TbCaptchaMapper tbCaptchaMapper;
@@ -31,12 +33,7 @@ public class UserControllerV1 {
     @Resource
     TbLoginMapper tbLoginMapper;
 
-    @GetMapping("test")
-    public Object test(){
-        return "true";
-    }
-
-    @PostMapping("/captcha/post")
+    @PostMapping("/captcha")
     public BaseResponseVO getCaptcha(@RequestBody GetCaptchaVo getCaptchaVo) {
         //send 验证码
         PeerUserExample peerUserExample = new PeerUserExample();
@@ -49,8 +46,9 @@ public class UserControllerV1 {
         }
 
         TbCaptcha tbCaptcha = new TbCaptcha();
-        tbCaptcha.setContent(String.format(GET_CAPTCHA_MESSAGE, "2356"));
-        tbCaptcha.setValue("2356");
+        String value = CapthaUtil.generate();
+        tbCaptcha.setContent(String.format(GET_CAPTCHA_MESSAGE, value));
+        tbCaptcha.setValue(value);
         tbCaptcha.setSessionId(BaseUtil.uuidGen());
         tbCaptcha.setPhone(getCaptchaVo.getPhone());
 
@@ -85,15 +83,15 @@ public class UserControllerV1 {
             return BaseResponseVO.SuccessResponse(true);
         }
 
-        return BaseResponseVO.SuccessResponse(true);
+        return BaseResponseVO.SuccessResponse(false);
     }
 
-    @PostMapping("/pass/post")
+    @PostMapping("/pass/create")
     public BaseResponseVO setPass(@RequestBody LoginRequest loginRequest) {
         PeerUser peerUser = new PeerUser();
         peerUser.setPhone(loginRequest.getPhone());
         peerUser.setPassword(loginRequest.getPassword());
-        peerUserMapper.insert(peerUser);
+        peerUserMapper.insertSelective(peerUser);
         return BaseResponseVO.SuccessResponse(true);
     }
 
@@ -102,11 +100,36 @@ public class UserControllerV1 {
         PeerUser peerUser = new PeerUser();
         peerUser.setNick(userInfoVo.getNick());
         peerUser.setIntroduction(userInfoVo.getIntroduction());
+        peerUser.setHeadUrl(userInfoVo.getHeadImgUrl());
+        peerUser.setSex(userInfoVo.getSex());
 
         PeerUserExample example = new PeerUserExample();
         example.createCriteria().andPhoneEqualTo(userInfoVo.getPhone());
         peerUserMapper.updateByExampleSelective(peerUser, example);
 
         return BaseResponseVO.SuccessResponse(true);
+    }
+
+    @GetMapping("/info/{phone}")
+    public BaseResponseVO query(@PathVariable("phone") String phone) {
+        if(StringUtils.isEmpty(phone)) {
+            throw new RuntimeException("未传递用户手机号");
+        }
+        PeerUserExample example = new PeerUserExample();
+        example.createCriteria().andPhoneEqualTo(phone);
+        List<PeerUser> peerUsers = peerUserMapper.selectByExample(example);
+
+        if(CollectionUtils.isEmpty(peerUsers) || peerUsers.size() > 1) {
+            throw new RuntimeException("查询用户信息失败");
+        }
+
+        UserInfoVo userInfoVo = new UserInfoVo();
+        userInfoVo.setNick(peerUsers.get(0).getNick());
+        userInfoVo.setHeadImgUrl(peerUsers.get(0).getHeadUrl());
+        userInfoVo.setIntroduction(peerUsers.get(0).getIntroduction());
+        userInfoVo.setSex(peerUsers.get(0).getSex());
+        userInfoVo.setPhone(peerUsers.get(0).getPhone());
+
+        return BaseResponseVO.SuccessResponse(userInfoVo);
     }
 }

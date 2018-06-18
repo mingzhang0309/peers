@@ -10,7 +10,7 @@ CREATE TABLE `tb_login`(
 	`token` VARCHAR(32) NOT NULL COMMENT 'token',
 	`device_type` TINYINT(2) NOT NULL default 0 COMMENT '0:ios 1:andriod 2:browser 3:winphone',
 	`device_sign` VARCHAR(32) NOT NULL default '' COMMENT '浏览器标识或者手机标识',
-	`login_type` TINYINT(1) NOT NULL COMMENT '手机短信登录、账号密码登录、oauth登录等',
+	`login_type` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '手机短信登录、账号密码登录、oauth登录等',
 	`ip` VARCHAR(16) NOT NULL default '' COMMENT 'ip',
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`expire_time` TIMESTAMP NOT NULL COMMENT '过期时间',
@@ -36,27 +36,27 @@ CREATE TABLE `tb_captcha`(
 CREATE TABLE `peer`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(32) NOT NULL COMMENT '宠物nick',
-	`sex` TINYINT(1) NOT NULL COMMENT '宠物性别',
+	`sex` SMALLINT (1) NOT NULL COMMENT '宠物性别',
 	`varieties` VARCHAR(32) NOT NULL COMMENT '宠物品种',
 	`owner_id` INT(11) UNSIGNED NOT NULL COMMENT '主人id',
 	`peer_head_url` VARCHAR(256) NOT NULL COMMENT '宠物头像url',
 	`peer_tag` VARCHAR(128) NOT NULL COMMENT '宠物标签',
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
-	PRIMARY KEY (`id`),
-	UNIQUE uniq_owner_id(`owner_id`)
+	PRIMARY KEY (`id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT '宠物表';
 
 CREATE TABLE `peer_user`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`phone` VARCHAR(16) NOT NULL COMMENT '手机号',
-	`nick` VARCHAR(32) NOT NULL COMMENT '用户nick',
-	`introduction` VARCHAR(256) NOT NULL COMMENT '用户简介',
+	`sex` SMALLINT(1) NOT NULL DEFAULT 2 COMMENT '用户性别 0-男生 1-女生 2-保密',
+	`nick` VARCHAR(32) NOT NULL DEFAULT ''COMMENT '用户nick',
+	`introduction` VARCHAR(256) DEFAULT '' NOT NULL COMMENT '用户简介',
+	`head_url` VARCHAR(256) NOT NULL DEFAULT '' COMMENT '头像url',
 	`password` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
-	PRIMARY KEY (`id`),
-	UNIQUE uniq_peer_id(`peer_id`)
+	PRIMARY KEY (`id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT '宠物主人表';
 
 CREATE TABLE `feed_base`(

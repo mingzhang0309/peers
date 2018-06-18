@@ -1,5 +1,7 @@
 package com.peer.dog.pojo;
 
+import com.peer.dog.dao.entity.TbCaptcha;
+
 import java.io.Serializable;
 
 /**
@@ -8,9 +10,12 @@ import java.io.Serializable;
  * @date 2018/6/10
  */
 public class GetCaptchaResponse implements Serializable {
+    private static final long serialVersionUID = -6704011972180459294L;
+    private boolean isMember;
+
     private String sessionId;
 
-    private boolean isMember;
+    private String capthaValue;
 
     public GetCaptchaResponse() {
     }
@@ -31,11 +36,20 @@ public class GetCaptchaResponse implements Serializable {
         isMember = member;
     }
 
+    public String getCapthaValue() {
+        return capthaValue;
+    }
+
+    public void setCapthaValue(String capthaValue) {
+        this.capthaValue = capthaValue;
+    }
+
     @Override
     public String toString() {
         return "GetCaptchaResponse{" +
-                "sessionId='" + sessionId + '\'' +
-                ", isMember=" + isMember +
+                "isMember=" + isMember +
+                ", sessionId='" + sessionId + '\'' +
+                ", capthaValue='" + capthaValue + '\'' +
                 '}';
     }
 }

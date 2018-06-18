@@ -9,6 +9,12 @@ import java.io.Serializable;
 public class PeerInfoVo implements Serializable {
 
     private static final long serialVersionUID = 6893830839584678482L;
+
+    /**
+     * 宠物id
+     */
+    private Integer id;
+
     /**
      * 宠物昵称
      */
@@ -17,7 +23,7 @@ public class PeerInfoVo implements Serializable {
     /**
      * 宠物性别
      */
-    private Boolean sex;
+    private Short sex;
 
     /**
      * 宠物品种
@@ -34,7 +40,20 @@ public class PeerInfoVo implements Serializable {
      */
     private String peerHeadUrl;
 
+    /**
+     * 主人id
+     */
+    private Integer ownId;
+
     public PeerInfoVo() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -45,11 +64,11 @@ public class PeerInfoVo implements Serializable {
         this.name = name;
     }
 
-    public Boolean getSex() {
+    public Short getSex() {
         return sex;
     }
 
-    public void setSex(Boolean sex) {
+    public void setSex(Short sex) {
         this.sex = sex;
     }
 
@@ -77,14 +96,24 @@ public class PeerInfoVo implements Serializable {
         this.peerHeadUrl = peerHeadUrl;
     }
 
+    public Integer getOwnId() {
+        return ownId;
+    }
+
+    public void setOwnId(Integer ownId) {
+        this.ownId = ownId;
+    }
+
     @Override
     public String toString() {
         return "PeerInfoVo{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", sex=" + sex +
                 ", varieties='" + varieties + '\'' +
                 ", phone='" + phone + '\'' +
                 ", peerHeadUrl='" + peerHeadUrl + '\'' +
+                ", ownId=" + ownId +
                 '}';
     }
 }

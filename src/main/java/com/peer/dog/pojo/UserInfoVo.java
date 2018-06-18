@@ -11,7 +11,10 @@ public class UserInfoVo implements Serializable {
 
     private String phone;
 
-    private String imgUrl;
+    /**
+     * 0-男 1-女 2-保密
+     */
+    private Short sex;
 
     private String nick;
 
@@ -28,14 +31,6 @@ public class UserInfoVo implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
     }
 
     public String getNick() {
@@ -62,10 +57,19 @@ public class UserInfoVo implements Serializable {
         this.headImgUrl = headImgUrl;
     }
 
+    public Short getSex() {
+        return sex;
+    }
+
+    public void setSex(Short sex) {
+        this.sex = sex;
+    }
+
     @Override
     public String toString() {
         return "UserInfoVo{" +
-                "imgUrl='" + imgUrl + '\'' +
+                "phone='" + phone + '\'' +
+                ", sex=" + sex +
                 ", nick='" + nick + '\'' +
                 ", introduction='" + introduction + '\'' +
                 ", headImgUrl='" + headImgUrl + '\'' +
