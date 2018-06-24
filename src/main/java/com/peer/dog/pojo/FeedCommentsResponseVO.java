@@ -3,6 +3,7 @@ package com.peer.dog.pojo;
 import java.util.List;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author stephen.zhang
@@ -11,13 +12,13 @@ import java.io.Serializable;
 public class FeedCommentsResponseVO implements Serializable {
     private static final long serialVersionUID = 9222833381490902561L;
 
-    private List<CommentVO> commentVOS;
+    private Map<Integer, CommentVO> commentVOS;
 
-    public List<CommentVO> getCommentVOS() {
+    public Map<Integer, CommentVO> getCommentVOS() {
         return commentVOS;
     }
 
-    public void setCommentVOS(List<CommentVO> commentVOS) {
+    public void setCommentVOS(Map<Integer, CommentVO> commentVOS) {
         this.commentVOS = commentVOS;
     }
 

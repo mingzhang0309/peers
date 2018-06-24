@@ -31,7 +31,7 @@ public class PeerControllerV1 {
     @Resource
     PeerVarietiesMapper peerVarietiesMapper;
 
-    @PostMapping("/info/post")
+    @PostMapping("/")
     public BaseResponseVO setInfos(@RequestBody PeerInfoVo peerInfoVo) {
         Peer peer = new Peer();
         peer.setName(peerInfoVo.getName());
@@ -55,10 +55,10 @@ public class PeerControllerV1 {
         userPeerRela.setRela(0);
         userPeerRelaMapper.insertSelective(userPeerRela);
 
-        return BaseResponseVO.SuccessResponse(true);
+        return BaseResponseVO.SuccessResponse(peer);
     }
 
-    @GetMapping("/info/{id}")
+    @GetMapping("/{id}")
     public BaseResponseVO getInfos(@PathVariable Integer id) {
         Peer peer = peerMapper.selectByPrimaryKey(id);
         if(peer == null) {

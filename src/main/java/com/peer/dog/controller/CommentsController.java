@@ -3,6 +3,7 @@ package com.peer.dog.controller;
 import com.peer.dog.pojo.BaseResponseVO;
 import com.peer.dog.pojo.FeedBaseVO;
 import com.peer.dog.pojo.FeedCommentsResponseVO;
+import com.peer.dog.pojo.PostCommentVO;
 import com.peer.dog.service.FeedCommentsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +19,13 @@ public class CommentsController {
     @Resource
     FeedCommentsService feedCommentsService;
 
-    @PostMapping("/get")
-    public BaseResponseVO getComments(@RequestBody FeedBaseVO feedBaseVO) {
-        FeedCommentsResponseVO feedCommentsResponseVO = feedCommentsService.getFeedComments(feedBaseVO);
-        return BaseResponseVO.SuccessResponse(feedCommentsResponseVO);
-    }
-
     /**
-     * 点赞
+     * 留言
      * @return
      */
-    @PostMapping("/post")
-    public BaseResponseVO comment() {
-        return null;
+    @PostMapping("/")
+    public BaseResponseVO comment(@RequestBody PostCommentVO postCommentVO) {
+        feedCommentsService.putComment(postCommentVO);
+        return BaseResponseVO.SuccessResponse(true);
     }
 }

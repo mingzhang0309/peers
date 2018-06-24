@@ -42,6 +42,7 @@ public class TokenFilter implements Filter {
         }
 
         HttpHeaderUtil.setUserId(tbLogins.get(0).getUserId());
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

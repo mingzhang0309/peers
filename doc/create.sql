@@ -98,7 +98,7 @@ CREATE TABLE `feed_pick`(
 CREATE TABLE `feed_message`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`feed_id` INT(11) NOT NULL COMMENT 'feed标识',
-	`name` VARCHAR(32) NOT NULL COMMENT '留言用户nick',
+	`user_id` INT(11) NOT NULL COMMENT '留言用户id',
 	`message` VARCHAR(512) NOT NULL COMMENT '留言内容',
 	`parent_id` INT(11) UNSIGNED NOT NULL COMMENT '父留言id，为-1则本身是父留言',
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',

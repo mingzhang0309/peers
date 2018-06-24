@@ -29,7 +29,7 @@ import static com.peer.dog.util.MessageUtil.GET_CAPTCHA_MESSAGE;
  * Created by stephen.zhang on 2018/5/30.
  */
 @RestController
-@RequestMapping("user")
+@RequestMapping("/user")
 public class UserControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(UserControllerV1.class);
 
@@ -111,7 +111,7 @@ public class UserControllerV1 {
         return BaseResponseVO.SuccessResponse(false);
     }
 
-    @PostMapping("/pass/create")
+    @PostMapping("/pass")
     public BaseResponseVO setPass(@RequestBody LoginRequest loginRequest) {
         PeerUser peerUser = new PeerUser();
         peerUser.setPhone(loginRequest.getPhone());
@@ -120,7 +120,7 @@ public class UserControllerV1 {
         return BaseResponseVO.SuccessResponse(true);
     }
 
-    @PostMapping("/info/post")
+    @PutMapping("/")
     public BaseResponseVO setInfos(@RequestBody UserInfoVo userInfoVo) {
         PeerUser peerUser = new PeerUser();
         peerUser.setNick(userInfoVo.getNick());
@@ -132,7 +132,7 @@ public class UserControllerV1 {
         example.createCriteria().andPhoneEqualTo(userInfoVo.getPhone());
         peerUserMapper.updateByExampleSelective(peerUser, example);
 
-        return BaseResponseVO.SuccessResponse(true);
+        return BaseResponseVO.SuccessResponse(userInfoVo);
     }
 
     @GetMapping("/info/{phone}")

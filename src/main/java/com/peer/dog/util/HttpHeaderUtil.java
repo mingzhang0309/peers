@@ -11,10 +11,13 @@ public class HttpHeaderUtil {
 
     public static String VERSION = "version";
 
+    public static String NICK = "nick";
+
     private static ThreadLocal<String> threadLocalToken = new ThreadLocal<>();
     private static ThreadLocal<String> threadLocalIp = new ThreadLocal<>();
     private static ThreadLocal<String> threadLocalVersion = new ThreadLocal<>();
     private static ThreadLocal<Integer> threadLocalUserId = new ThreadLocal<>();
+    private static ThreadLocal<String> threadLocalUserNick = new ThreadLocal<>();
 
     public static String getToken() {
         return threadLocalToken.get();
@@ -32,8 +35,16 @@ public class HttpHeaderUtil {
         return threadLocalUserId.get();
     }
 
+    public static String getUserNick() {
+        return threadLocalUserNick.get();
+    }
+
     public static void setUserId(Integer userId) {
         threadLocalUserId.set(userId);
+    }
+
+    public static void setUserNick(String nick) {
+        threadLocalUserNick.set(nick);
     }
 
     public static void clear() {
@@ -41,6 +52,7 @@ public class HttpHeaderUtil {
         threadLocalIp.remove();
         threadLocalVersion.remove();
         threadLocalUserId.remove();
+        threadLocalUserNick.remove();
     }
 
 }

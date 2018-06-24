@@ -1,18 +1,26 @@
 package com.peer.dog.service.sms;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.google.common.base.Charsets;
+import com.google.common.collect.Collections2;
+import com.google.common.io.Files;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.List;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Created on 17/6/7.
@@ -33,7 +41,21 @@ public class SmsService {
     //产品域名,开发者无需替换
     static final String domain = "dysmsapi.aliyuncs.com";
 
-    // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
+    String accessKeyId = "xxx";
+    String accessKeySecret = "xxx";
+
+    @PostConstruct
+    public void init() throws IOException {
+        try {
+            Properties properties = new Properties();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/zhangming/Desktop/peer.properties"));
+            properties.load(bufferedReader);
+            accessKeyId = properties.getProperty("accessKeyId");
+            accessKeySecret = properties.getProperty("accessKeySecret");
+        } catch (IOException e) {
+            throw e;
+        }
+    }
 
 
     public SendSmsResponse sendSms(String phone, String signName,String templateCode, String templateParam) throws ClientException {

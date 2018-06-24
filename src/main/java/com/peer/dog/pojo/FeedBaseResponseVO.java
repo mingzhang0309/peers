@@ -27,6 +27,8 @@ public class FeedBaseResponseVO implements Serializable {
 
     private boolean isCanThumbs;
 
+    private CommentVO commentVO;
+
     public Integer getId() {
         return id;
     }
@@ -99,6 +101,14 @@ public class FeedBaseResponseVO implements Serializable {
         isCanThumbs = canThumbs;
     }
 
+    public CommentVO getCommentVO() {
+        return commentVO;
+    }
+
+    public void setCommentVO(CommentVO commentVO) {
+        this.commentVO = commentVO;
+    }
+
     @Override
     public String toString() {
         return "FeedBaseResponseVO{" +
@@ -111,6 +121,7 @@ public class FeedBaseResponseVO implements Serializable {
                 ", ownerId=" + ownerId +
                 ", location='" + location + '\'' +
                 ", isCanThumbs=" + isCanThumbs +
+                ", commentVO=" + commentVO +
                 '}';
     }
 }

@@ -1,5 +1,8 @@
 package com.peer.dog.controller;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.peer.dog.dao.FeedBaseMapper;
 import com.peer.dog.dao.FeedPickMapper;
 import com.peer.dog.dao.UserPeerRelaMapper;
@@ -8,6 +11,7 @@ import com.peer.dog.dao.entity.FeedBaseExample;
 import com.peer.dog.dao.entity.FeedPick;
 import com.peer.dog.dao.entity.FeedPickExample;
 import com.peer.dog.pojo.*;
+import com.peer.dog.service.FeedCommentsService;
 import com.peer.dog.service.UserPeerRelaService;
 import com.peer.dog.util.HttpHeaderUtil;
 import org.apache.ibatis.session.RowBounds;
@@ -15,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,12 +39,15 @@ public class FeedController {
     @Resource
     FeedPickMapper feedPickMapper;
 
+    @Resource
+    FeedCommentsService feedCommentsService;
+
     /**
      * 推荐
      * 
      * @return
      */
-    @GetMapping("/stream")
+    @GetMapping("/")
     public BaseResponseVO getFeed(@RequestParam String startDateTime) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
         if(StringUtils.isEmpty(startDateTime)) {
@@ -59,7 +67,16 @@ public class FeedController {
 
         RowBounds rowBounds = new RowBounds(0, 10);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
+        if(CollectionUtils.isEmpty(feedBases)) {
+            return BaseResponseVO.SuccessResponse(null);
+        }
 
+        //留言信息
+        List<Integer> commentsVO = Lists.newArrayList();
+        feedBases.stream().forEach(feedBase -> commentsVO.add(feedBase.getId()));
+        FeedCommentsResponseVO feedCommentsResponseVO = feedCommentsService.batchGetFeedComments(commentsVO);
+
+        //点赞信息
         FeedPickExample example = new FeedPickExample();
         example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
         List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
@@ -80,6 +97,10 @@ public class FeedController {
                 vo.setOwnerId(feedBase.getOwnerId());
                 vo.setPeerId(feedBase.getPeerId());
                 vo.setThumbsCount(feedBase.getThumbsCount());
+
+                if (feedCommentsResponseVO != null && feedCommentsResponseVO.getCommentVOS() != null) {
+                    vo.setCommentVO(feedCommentsResponseVO.getCommentVOS().get(feedBase.getId()));
+                }
             });
             return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
         }
@@ -92,7 +113,7 @@ public class FeedController {
      * 
      * @return
      */
-    @GetMapping("/stream/user")
+    @GetMapping("/follow")
     public BaseResponseVO getUserFeed() {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
         feedBaseExample.createCriteria().andOwnerIdNotEqualTo(HttpHeaderUtil.getUserId());
@@ -101,7 +122,7 @@ public class FeedController {
         return BaseResponseVO.SuccessResponse(feedBases);
     }
 
-    @PostMapping("/stream/add")
+    @PostMapping("/")
     public BaseResponseVO postFeed(@RequestBody PostFeedVO postFeedVO) {
         FeedBase feedBase = new FeedBase();
         feedBase.setPeerId(postFeedVO.getPeerId());
@@ -120,7 +141,7 @@ public class FeedController {
      * 
      * @return
      */
-    @GetMapping("/stream/pick/{feedId}")
+    @PostMapping("/pick/{feedId}")
     public BaseResponseVO pick(@PathVariable Integer feedId) {
         FeedPickExample feedPickExample = new FeedPickExample();
         feedPickExample.createCriteria().andFeedIdEqualTo(feedId).andUserIdEqualTo(HttpHeaderUtil.getUserId());
