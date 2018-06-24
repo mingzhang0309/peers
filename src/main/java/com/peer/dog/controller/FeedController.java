@@ -10,14 +10,16 @@ import com.peer.dog.dao.entity.FeedPickExample;
 import com.peer.dog.pojo.*;
 import com.peer.dog.service.UserPeerRelaService;
 import com.peer.dog.util.HttpHeaderUtil;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * @author stephen.zhang
@@ -34,23 +36,39 @@ public class FeedController {
 
     /**
      * 推荐
+     * 
      * @return
      */
     @GetMapping("/stream")
-    public BaseResponseVO getFeed() {
+    public BaseResponseVO getFeed(@RequestParam String startDateTime) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
-        feedBaseExample.createCriteria().andOwnerIdNotEqualTo(HttpHeaderUtil.getUserId());
-        List<FeedBase> feedBases = feedBaseMapper.selectByExample(feedBaseExample);
+        if(StringUtils.isEmpty(startDateTime)) {
+            startDateTime = "1970-01-01 00:00:00";
+        }
+        LocalDateTime startTime;
+        try {
+
+            startTime = LocalDateTime
+                    .parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (Exception e) {
+            startTime = LocalDateTime
+                    .parse("2018-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        feedBaseExample.createCriteria().andOwnerIdNotEqualTo(HttpHeaderUtil.getUserId())
+                .andCreateTimeGreaterThan(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
+
+        RowBounds rowBounds = new RowBounds(0, 10);
+        List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
 
         FeedPickExample example = new FeedPickExample();
         example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
         List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
         Set<Integer> feedIdSet = new HashSet<>(feedPicks.size());
-        if(!CollectionUtils.isEmpty(feedPicks)) {
+        if (!CollectionUtils.isEmpty(feedPicks)) {
             feedPicks.stream().forEach((feedPick) -> feedIdSet.add(feedPick.getFeedId()));
         }
 
-        if(!CollectionUtils.isEmpty(feedBases)) {
+        if (!CollectionUtils.isEmpty(feedBases)) {
             List<FeedBaseResponseVO> feedBaseResponseVOS = new ArrayList<>(feedBases.size());
             feedBases.stream().forEach((feedBase) -> {
                 FeedBaseResponseVO vo = new FeedBaseResponseVO();
@@ -71,6 +89,7 @@ public class FeedController {
 
     /**
      * 关注
+     * 
      * @return
      */
     @GetMapping("/stream/user")
@@ -98,6 +117,7 @@ public class FeedController {
 
     /**
      * 点赞
+     * 
      * @return
      */
     @GetMapping("/stream/pick/{feedId}")
@@ -105,7 +125,7 @@ public class FeedController {
         FeedPickExample feedPickExample = new FeedPickExample();
         feedPickExample.createCriteria().andFeedIdEqualTo(feedId).andUserIdEqualTo(HttpHeaderUtil.getUserId());
         List<FeedPick> feedPicks = feedPickMapper.selectByExample(feedPickExample);
-        if(!CollectionUtils.isEmpty(feedPicks)) {
+        if (!CollectionUtils.isEmpty(feedPicks)) {
             throw new RuntimeException("不允许重复点赞");
         }
 

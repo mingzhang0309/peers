@@ -9,6 +9,8 @@ import com.peer.dog.pojo.*;
 import com.peer.dog.service.sms.SmsService;
 import com.peer.dog.util.BaseUtil;
 import com.peer.dog.util.CapthaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,8 @@ import static com.peer.dog.util.MessageUtil.GET_CAPTCHA_MESSAGE;
 @RestController
 @RequestMapping("user")
 public class UserControllerV1 {
+    private static final Logger logger = LoggerFactory.getLogger(UserControllerV1.class);
+
     @Resource
     TbCaptchaMapper tbCaptchaMapper;
 
@@ -64,6 +68,7 @@ public class UserControllerV1 {
         try {
             smsService.sendSms(tbCaptcha.getPhone(), "宠物说", "SMS_137875107", tbCaptcha.getContent());
         } catch (ClientException e) {
+            logger.error("发送短信失败", e);
             throw new RuntimeException("短信发送失败");
         }
 
