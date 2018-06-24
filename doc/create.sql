@@ -80,7 +80,7 @@ CREATE TABLE `feed_base`(
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
 	PRIMARY KEY (`id`),
-	UNIQUE uniq_peer_id(`peer_id`),
+	KEY idx_peer_id(`peer_id`),
 	KEY idx_owner_id(`owner_id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'feed流基础表';
 
@@ -100,11 +100,10 @@ CREATE TABLE `feed_message`(
 	`feed_id` INT(11) NOT NULL COMMENT 'feed标识',
 	`user_id` INT(11) NOT NULL COMMENT '留言用户id',
 	`message` VARCHAR(512) NOT NULL COMMENT '留言内容',
-	`parent_id` INT(11) UNSIGNED NOT NULL COMMENT '父留言id，为-1则本身是父留言',
+	`parent_id` INT(11) NOT NULL DEFAULT -1 COMMENT '父留言id，为-1则本身是父留言',
 	`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP comment '创建时间',
 	`last_update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
-	PRIMARY KEY (`id`),
-	UNIQUE uniq_feed_id(`feed_id`)
+	PRIMARY KEY (`id`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'feed留言表';
 
 CREATE TABLE `user_peer_rela`(

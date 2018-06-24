@@ -16,6 +16,8 @@ public class BaseResponseVO<T> implements Serializable {
 
     private String message = "";
 
+    private String nextHref;
+
     private T data;
 
     public BaseResponseVO() {
@@ -66,11 +68,20 @@ public class BaseResponseVO<T> implements Serializable {
         this.data = data;
     }
 
+    public String getNextHref() {
+        return nextHref;
+    }
+
+    public void setNextHref(String nextHref) {
+        this.nextHref = nextHref;
+    }
+
     @Override
     public String toString() {
         return "BaseResponseVO{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
+                ", nextHref='" + nextHref + '\'' +
                 ", data=" + data +
                 '}';
     }

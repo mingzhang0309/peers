@@ -1,6 +1,7 @@
 package com.peer.dog.pojo;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author stephen.zhang
@@ -27,7 +28,7 @@ public class FeedBaseResponseVO implements Serializable {
 
     private boolean isCanThumbs;
 
-    private CommentVO commentVO;
+    private Map<Integer, CommentVO> commentVO;
 
     public Integer getId() {
         return id;
@@ -101,11 +102,11 @@ public class FeedBaseResponseVO implements Serializable {
         isCanThumbs = canThumbs;
     }
 
-    public CommentVO getCommentVO() {
+    public Map<Integer, CommentVO> getCommentVO() {
         return commentVO;
     }
 
-    public void setCommentVO(CommentVO commentVO) {
+    public void setCommentVO(Map<Integer, CommentVO> commentVO) {
         this.commentVO = commentVO;
     }
 

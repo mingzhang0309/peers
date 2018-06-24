@@ -116,10 +116,16 @@ public class UserControllerV1 {
         peerUser.setPhone(loginRequest.getPhone());
         peerUser.setPassword(loginRequest.getPassword());
         peerUserMapper.insertSelective(peerUser);
-        return BaseResponseVO.SuccessResponse(true);
+
+        TbLogin tbLogin = new TbLogin();
+        tbLogin.setUserId(peerUser.getId());
+        tbLogin.setToken(BaseUtil.uuidGen());
+        tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
+        tbLoginMapper.insertSelective(tbLogin);
+        return BaseResponseVO.SuccessResponse(tbLogin);
     }
 
-    @PutMapping("/")
+    @PutMapping()
     public BaseResponseVO setInfos(@RequestBody UserInfoVo userInfoVo) {
         PeerUser peerUser = new PeerUser();
         peerUser.setNick(userInfoVo.getNick());
@@ -134,7 +140,7 @@ public class UserControllerV1 {
         return BaseResponseVO.SuccessResponse(userInfoVo);
     }
 
-    @GetMapping("/info/{phone}")
+    @GetMapping("/{phone}")
     public BaseResponseVO query(@PathVariable("phone") String phone) {
         if(StringUtils.isEmpty(phone)) {
             throw new RuntimeException("未传递用户手机号");

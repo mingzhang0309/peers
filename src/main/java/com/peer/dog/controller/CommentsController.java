@@ -23,9 +23,12 @@ public class CommentsController {
      * 留言
      * @return
      */
-    @PostMapping("/")
+    @PostMapping()
     public BaseResponseVO comment(@RequestBody PostCommentVO postCommentVO) {
         feedCommentsService.putComment(postCommentVO);
-        return BaseResponseVO.SuccessResponse(true);
+
+        BaseResponseVO baseResponseVO = BaseResponseVO.SuccessResponse(true);
+        baseResponseVO.setNextHref("/feed/" + postCommentVO.getFeedId());
+        return BaseResponseVO.SuccessResponse(baseResponseVO);
     }
 }

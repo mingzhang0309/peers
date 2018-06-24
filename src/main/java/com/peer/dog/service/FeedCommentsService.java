@@ -18,10 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author stephen.zhang
@@ -62,7 +59,7 @@ public class FeedCommentsService {
             return null;
         } else {
             FeedCommentsResponseVO responseVO = new FeedCommentsResponseVO();
-            Map<Integer, CommentVO> mainComment = Maps.newHashMap();
+            Map<Integer, Map<Integer, CommentVO>> mainComment = Maps.newHashMap();
             for (FeedMessage feedMessage : feedMessages) {
                 PeerUser peerUser = peerUserMapper.selectByPrimaryKey(feedMessage.getUserId());
 
@@ -73,10 +70,22 @@ public class FeedCommentsService {
                     commentVO.setMessage(feedMessage.getMessage());
                     commentVO.setUserNick(peerUser.getNick());
                     commentVO.setUserHeaderUrl(peerUser.getHeadUrl());
-                    mainComment.put(commentVO.getId(), commentVO);
+
+                    //主留言只会有一次机会
+                    if(mainComment == null) {
+                        mainComment = new HashMap<>(feedMessages.size());
+                    }
+
+                    if(!mainComment.containsKey(feedMessage.getFeedId())) {
+                        Map<Integer, CommentVO> map = new HashMap<>(1);
+                        map.put(commentVO.getId(), commentVO);
+                        mainComment.put(feedMessage.getFeedId(), map);
+                    } else {
+                        mainComment.get(feedMessage.getFeedId()).put(commentVO.getId(), commentVO);
+                    }
                 } else {
                     //回复留言
-                    CommentVO commentVO = mainComment.get(feedMessage.getParentId());
+                    CommentVO commentVO = mainComment.get(feedMessage.getFeedId()).get(feedMessage.getParentId());
                     CommentVO subCommentVO = new CommentVO();
                     subCommentVO.setId(feedMessage.getId());
                     subCommentVO.setMessage(feedMessage.getMessage());

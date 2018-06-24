@@ -47,7 +47,7 @@ public class FeedController {
      * 
      * @return
      */
-    @GetMapping("/")
+    @GetMapping()
     public BaseResponseVO getFeed(@RequestParam String startDateTime) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
         if(StringUtils.isEmpty(startDateTime)) {
@@ -62,7 +62,10 @@ public class FeedController {
             startTime = LocalDateTime
                     .parse("2018-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
-        feedBaseExample.createCriteria().andOwnerIdNotEqualTo(HttpHeaderUtil.getUserId())
+//        feedBaseExample.createCriteria().andOwnerIdNotEqualTo(HttpHeaderUtil.getUserId())
+//                .andCreateTimeGreaterThan(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
+
+        feedBaseExample.createCriteria()
                 .andCreateTimeGreaterThan(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
 
         RowBounds rowBounds = new RowBounds(0, 10);
@@ -101,11 +104,50 @@ public class FeedController {
                 if (feedCommentsResponseVO != null && feedCommentsResponseVO.getCommentVOS() != null) {
                     vo.setCommentVO(feedCommentsResponseVO.getCommentVOS().get(feedBase.getId()));
                 }
+                feedBaseResponseVOS.add(vo);
             });
             return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
         }
 
         return BaseResponseVO.SuccessResponse(null);
+    }
+
+    /**
+     * feed详情页
+     *
+     * @return
+     */
+    @GetMapping("/{feedId}")
+    public BaseResponseVO getFeedDetail(@PathVariable Integer feedId) {
+        FeedBase feedBase = feedBaseMapper.selectByPrimaryKey(feedId);
+
+        //留言信息
+        FeedCommentsResponseVO feedCommentsResponseVO = feedCommentsService.getFeedComments(feedId);
+
+        //是否还能点赞信息
+        FeedPickExample example = new FeedPickExample();
+        example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
+        List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
+        Set<Integer> feedIdSet = new HashSet<>(feedPicks.size());
+        if (!CollectionUtils.isEmpty(feedPicks)) {
+            feedPicks.stream().forEach((feedPick) -> feedIdSet.add(feedPick.getFeedId()));
+        }
+
+        FeedBaseResponseVO vo = new FeedBaseResponseVO();
+        vo.setId(feedBase.getId());
+        vo.setCanThumbs(feedIdSet.contains(feedBase.getId()));
+        vo.setCommentCount(feedBase.getCommentCount());
+        vo.setImg(feedBase.getImg());
+        vo.setLocation(feedBase.getLocation());
+        vo.setOwnerId(feedBase.getOwnerId());
+        vo.setPeerId(feedBase.getPeerId());
+        vo.setThumbsCount(feedBase.getThumbsCount());
+
+        if (feedCommentsResponseVO != null && feedCommentsResponseVO.getCommentVOS() != null) {
+            vo.setCommentVO(feedCommentsResponseVO.getCommentVOS().get(feedId));
+        }
+
+        return BaseResponseVO.SuccessResponse(vo);
     }
 
     /**
@@ -122,7 +164,7 @@ public class FeedController {
         return BaseResponseVO.SuccessResponse(feedBases);
     }
 
-    @PostMapping("/")
+    @PostMapping()
     public BaseResponseVO postFeed(@RequestBody PostFeedVO postFeedVO) {
         FeedBase feedBase = new FeedBase();
         feedBase.setPeerId(postFeedVO.getPeerId());
@@ -133,7 +175,9 @@ public class FeedController {
 
         feedBaseMapper.insertSelective(feedBase);
 
-        return BaseResponseVO.SuccessResponse("true");
+        BaseResponseVO baseResponseVO = BaseResponseVO.SuccessResponse(true);
+        baseResponseVO.setNextHref("/pick/" + feedBase.getId());
+        return baseResponseVO;
     }
 
     /**

@@ -12,13 +12,18 @@ import java.util.Map;
 public class FeedCommentsResponseVO implements Serializable {
     private static final long serialVersionUID = 9222833381490902561L;
 
-    private Map<Integer, CommentVO> commentVOS;
+    /**
+     * key1 feedId
+     * key2 主commentId
+     * value 留言信息
+     */
+    private Map<Integer, Map<Integer, CommentVO>> commentVOS;
 
-    public Map<Integer, CommentVO> getCommentVOS() {
+    public Map<Integer, Map<Integer, CommentVO>> getCommentVOS() {
         return commentVOS;
     }
 
-    public void setCommentVOS(Map<Integer, CommentVO> commentVOS) {
+    public void setCommentVOS(Map<Integer, Map<Integer, CommentVO>> commentVOS) {
         this.commentVOS = commentVOS;
     }
 

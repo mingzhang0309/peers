@@ -31,7 +31,7 @@ public class PeerControllerV1 {
     @Resource
     PeerVarietiesMapper peerVarietiesMapper;
 
-    @PostMapping("/")
+    @PostMapping
     public BaseResponseVO setInfos(@RequestBody PeerInfoVo peerInfoVo) {
         Peer peer = new Peer();
         peer.setName(peerInfoVo.getName());
