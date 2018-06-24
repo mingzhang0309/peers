@@ -38,7 +38,7 @@ public class BaseResponseVO<T> implements Serializable {
     public static BaseResponseVO FailureResponse(String message) {
         BaseResponseVO baseResponseVO = new BaseResponseVO();
         baseResponseVO.status = -1;
-        baseResponseVO.message = "";
+        baseResponseVO.message = message;
         return baseResponseVO;
     }
 

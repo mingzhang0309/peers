@@ -71,8 +71,8 @@ CREATE TABLE `peer_user`(
 CREATE TABLE `feed_base`(
 	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`peer_id` INT(11) NOT NULL COMMENT '宠物id',
-	`img` VARCHAR(256) NOT NULL COMMENT '宠物图片url',
-	`message` VARCHAR(256) NOT NULL COMMENT 'feed主信息',
+	`img` TEXT NOT NULL COMMENT '宠物图片url',
+	`message` TEXT NOT NULL COMMENT 'feed主信息',
 	`thumbs_count` INT(11) NOT NULL DEFAULT 0 COMMENT 'feed点赞数',
 	`comment_count` INT(11) NOT NULL DEFAULT 0 COMMENT 'feed评论数',
 	`owner_id` INT(11) UNSIGNED NOT NULL COMMENT 'feed发布人',
