@@ -64,12 +64,12 @@ public class UserControllerV1 {
         tbCaptcha.setSessionId(BaseUtil.uuidGen());
         tbCaptcha.setPhone(getCaptchaVo.getPhone());
 
-        try {
-            smsService.sendSms(tbCaptcha.getPhone(), "宠物说", "SMS_137875107", tbCaptcha.getContent());
-        } catch (ClientException e) {
-            logger.error("发送短信失败", e);
-            throw new RuntimeException("短信发送失败");
-        }
+//        try {
+//            smsService.sendSms(tbCaptcha.getPhone(), "宠物说", "SMS_137875107", tbCaptcha.getContent());
+//        } catch (ClientException e) {
+//            logger.error("发送短信失败", e);
+//            throw new RuntimeException("短信发送失败");
+//        }
 
         tbCaptchaMapper.insertSelective(tbCaptcha);
         response.setMember(false);
