@@ -64,7 +64,6 @@ public class UserControllerV1 {
         tbCaptcha.setSessionId(BaseUtil.uuidGen());
         tbCaptcha.setPhone(getCaptchaVo.getPhone());
 
-
         try {
             smsService.sendSms(tbCaptcha.getPhone(), "宠物说", "SMS_137875107", tbCaptcha.getContent());
         } catch (ClientException e) {
@@ -105,7 +104,7 @@ public class UserControllerV1 {
             tbLogin.setToken(BaseUtil.uuidGen());
             tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
             tbLoginMapper.insertSelective(tbLogin);
-            return BaseResponseVO.SuccessResponse(true);
+            return BaseResponseVO.SuccessResponse(tbLogin);
         }
 
         return BaseResponseVO.SuccessResponse(false);
