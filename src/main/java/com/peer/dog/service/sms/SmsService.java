@@ -48,7 +48,8 @@ public class SmsService {
     public void init() throws IOException {
         try {
             Properties properties = new Properties();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/zhangming/Desktop/peer.properties"));
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/zhangming/Desktop/peer.properties"));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("/home/admin/peer.properties"));
             properties.load(bufferedReader);
             accessKeyId = properties.getProperty("accessKeyId");
             accessKeySecret = properties.getProperty("accessKeySecret");

@@ -42,9 +42,6 @@ public class UserControllerV1 {
     @Resource
     TbLoginMapper tbLoginMapper;
 
-    @Resource
-    SmsService smsService;
-
     @PostMapping("/captcha")
     public BaseResponseVO getCaptcha(@RequestBody GetCaptchaVo getCaptchaVo) {
         //send 验证码
