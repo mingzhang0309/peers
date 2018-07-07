@@ -94,7 +94,6 @@ public class WeixinController {
                     tbLoginMapper.insertSelective(tbLogin);
                     return BaseResponseVO.SuccessResponse(tbLogin);
                 }
-                return strResult;
             } else {
                 throw new RuntimeException("微信获取信息失败");
             }
@@ -103,6 +102,6 @@ public class WeixinController {
             logger.error("weixin http get error", e);
         }
 
-        return null;
+        return BaseResponseVO.FailureResponse("微信获取信息失败");
     }
 }
