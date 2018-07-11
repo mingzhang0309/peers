@@ -56,6 +56,7 @@ public class WeixinController {
         String url = String.format(WEIXIN_LOGIN_URL, systemContextService.getAppId(), systemContextService.getAppSecret(), code);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet request = new HttpGet(url);
+        logger.info("微信请求 {}", url);
         try {
             HttpResponse response = client.execute(request);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
