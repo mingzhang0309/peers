@@ -14,10 +14,13 @@ import com.google.common.io.Files;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.List;
+
+import com.peer.dog.service.SystemContextService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -41,23 +44,8 @@ public class SmsService {
     //产品域名,开发者无需替换
     static final String domain = "dysmsapi.aliyuncs.com";
 
-    String accessKeyId = "xxx";
-    String accessKeySecret = "xxx";
-
-    @PostConstruct
-    public void init() throws IOException {
-        try {
-            Properties properties = new Properties();
-//            BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/zhangming/Desktop/peer.properties"));
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("/home/admin/peer.properties"));
-            properties.load(bufferedReader);
-            accessKeyId = properties.getProperty("accessKeyId");
-            accessKeySecret = properties.getProperty("accessKeySecret");
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
+    @Resource
+    SystemContextService systemContextService;
 
     public SendSmsResponse sendSms(String phone, String signName,String templateCode, String templateParam) throws ClientException {
 
@@ -66,7 +54,7 @@ public class SmsService {
         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
 
         //初始化acsClient,暂不支持region化
-        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
+        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", systemContextService.getAccessKeyId(), systemContextService.getAccessKeySecret());
         DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
         IAcsClient acsClient = new DefaultAcsClient(profile);
 
