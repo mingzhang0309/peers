@@ -26,8 +26,8 @@ public class SystemContextService {
     public void init() throws IOException {
         try {
             Properties properties = new Properties();
-//            BufferedReader bufferedReader = new BufferedReader(new FileReader("/home/admin/peer.properties"));
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/zhangming/Desktop/宠物说/线上配置/peer.properties"));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("/home/admin/peer.properties"));
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/zhangming/Desktop/宠物说/线上配置/peer.properties"));
             properties.load(bufferedReader);
 
             appId = properties.getProperty("appId");
