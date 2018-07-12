@@ -9,6 +9,7 @@ import com.peer.dog.pojo.*;
 import com.peer.dog.service.sms.SmsService;
 import com.peer.dog.util.BaseUtil;
 import com.peer.dog.util.CapthaUtil;
+import com.peer.dog.util.HttpHeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -139,11 +140,15 @@ public class UserControllerV1 {
 
     @GetMapping("/{phone}")
     public BaseResponseVO query(@PathVariable("phone") String phone) {
-        if(StringUtils.isEmpty(phone)) {
+        if(StringUtils.isEmpty(phone) && HttpHeaderUtil.getUserId() == null) {
             throw new RuntimeException("未传递用户手机号");
         }
         PeerUserExample example = new PeerUserExample();
-        example.createCriteria().andPhoneEqualTo(phone);
+        if (!StringUtils.isEmpty(phone)) {
+            example.createCriteria().andPhoneEqualTo(phone);
+        } else {
+            example.createCriteria().andIdEqualTo(HttpHeaderUtil.getUserId());
+        }
         List<PeerUser> peerUsers = peerUserMapper.selectByExample(example);
 
         if(CollectionUtils.isEmpty(peerUsers) || peerUsers.size() > 1) {
@@ -158,5 +163,10 @@ public class UserControllerV1 {
         userInfoVo.setPhone(peerUsers.get(0).getPhone());
 
         return BaseResponseVO.SuccessResponse(userInfoVo);
+    }
+
+    @GetMapping("/")
+    public BaseResponseVO query() {
+        return query(null);
     }
 }

@@ -23,7 +23,7 @@ import java.util.*;
 @WebFilter(filterName = "tokenFilter", urlPatterns = "/*")
 public class TokenFilter implements Filter {
     private static final Set<String> NEED_FILTER = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList("/comment", "/feed/follow", "/feed/pick")));
+            Arrays.asList("/comment", "/feed/follow", "/feed/pick", "/user")));
 
     @Resource
     TbLoginMapper tbLoginMapper;
@@ -60,6 +60,6 @@ public class TokenFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        HttpHeaderUtil.clear();
     }
 }
