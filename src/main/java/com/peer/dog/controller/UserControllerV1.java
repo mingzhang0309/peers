@@ -1,9 +1,8 @@
 package com.peer.dog.controller;
 
 import com.aliyuncs.exceptions.ClientException;
-import com.peer.dog.dao.PeerUserMapper;
-import com.peer.dog.dao.TbCaptchaMapper;
-import com.peer.dog.dao.TbLoginMapper;
+import com.google.common.collect.Lists;
+import com.peer.dog.dao.*;
 import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.*;
 import com.peer.dog.service.sms.SmsService;
@@ -42,6 +41,12 @@ public class UserControllerV1 {
 
     @Resource
     TbLoginMapper tbLoginMapper;
+
+    @Resource
+    PeerMapper peerMapper;
+
+    @Resource
+    UserPeerRelaMapper userPeerRelaMapper;
 
     @PostMapping("/captcha")
     public BaseResponseVO getCaptcha(@RequestBody GetCaptchaVo getCaptchaVo) {
@@ -168,5 +173,20 @@ public class UserControllerV1 {
     @GetMapping("/")
     public BaseResponseVO query() {
         return query(null);
+    }
+
+    @GetMapping("/peers")
+    public BaseResponseVO queryPeers() {
+        UserPeerRelaExample example = new UserPeerRelaExample();
+        example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
+        List<UserPeerRela> userPeerRelas = userPeerRelaMapper.selectByExample(example);
+        List<Peer> peers = Lists.newArrayList();
+        if(CollectionUtils.isEmpty(userPeerRelas)) {
+            for (UserPeerRela userPeerRela : userPeerRelas) {
+                Peer peer = peerMapper.selectByPrimaryKey(userPeerRela.getPeerId());
+                peers.add(peer);
+            }
+        }
+        return BaseResponseVO.SuccessResponse(peers);
     }
 }
