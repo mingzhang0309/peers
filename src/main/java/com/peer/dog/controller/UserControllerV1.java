@@ -177,11 +177,16 @@ public class UserControllerV1 {
 
     @GetMapping("/peers")
     public BaseResponseVO queryPeers() {
+        return queryOtherUserPeers(HttpHeaderUtil.getUserId());
+    }
+
+    @GetMapping("/peers/{id}")
+    public BaseResponseVO queryOtherUserPeers(@PathVariable Integer id) {
         UserPeerRelaExample example = new UserPeerRelaExample();
-        example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
+        example.createCriteria().andUserIdEqualTo(id);
         List<UserPeerRela> userPeerRelas = userPeerRelaMapper.selectByExample(example);
         List<Peer> peers = Lists.newArrayList();
-        if(CollectionUtils.isEmpty(userPeerRelas)) {
+        if(!CollectionUtils.isEmpty(userPeerRelas)) {
             for (UserPeerRela userPeerRela : userPeerRelas) {
                 Peer peer = peerMapper.selectByPrimaryKey(userPeerRela.getPeerId());
                 peers.add(peer);
