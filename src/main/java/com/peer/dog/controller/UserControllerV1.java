@@ -156,6 +156,10 @@ public class UserControllerV1 {
         }
         List<PeerUser> peerUsers = peerUserMapper.selectByExample(example);
 
+        UserPeerRelaExample example1 = new UserPeerRelaExample();
+        example1.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId()).andRelaEqualTo(1);
+        int count = userPeerRelaMapper.countByExample(example1);
+
         if(CollectionUtils.isEmpty(peerUsers) || peerUsers.size() > 1) {
             throw new RuntimeException("查询用户信息失败");
         }
@@ -166,6 +170,7 @@ public class UserControllerV1 {
         userInfoVo.setIntroduction(peerUsers.get(0).getIntroduction());
         userInfoVo.setSex(peerUsers.get(0).getSex());
         userInfoVo.setPhone(peerUsers.get(0).getPhone());
+        userInfoVo.setPickCount((long) count);
 
         return BaseResponseVO.SuccessResponse(userInfoVo);
     }

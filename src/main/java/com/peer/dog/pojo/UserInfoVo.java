@@ -22,6 +22,8 @@ public class UserInfoVo implements Serializable {
 
     private String headImgUrl;
 
+    private Long pickCount;
+
     public UserInfoVo() {
     }
 
@@ -65,6 +67,14 @@ public class UserInfoVo implements Serializable {
         this.sex = sex;
     }
 
+    public Long getPickCount() {
+        return pickCount;
+    }
+
+    public void setPickCount(Long pickCount) {
+        this.pickCount = pickCount;
+    }
+
     @Override
     public String toString() {
         return "UserInfoVo{" +
@@ -73,6 +83,7 @@ public class UserInfoVo implements Serializable {
                 ", nick='" + nick + '\'' +
                 ", introduction='" + introduction + '\'' +
                 ", headImgUrl='" + headImgUrl + '\'' +
+                ", pickCount=" + pickCount +
                 '}';
     }
 }
