@@ -1,5 +1,7 @@
 package com.peer.dog.filter;
 
+import com.peer.dog.exception.ErrorCode;
+import com.peer.dog.exception.PeerException;
 import com.peer.dog.pojo.BaseResponseVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,10 @@ public class ExceptionHandle {
     @ResponseBody
     public BaseResponseVO Handle(Exception e){
         logger.error("异常信息", e);
-        return BaseResponseVO.FailureResponse(e.getMessage());
+
+        if (e instanceof PeerException) {
+            return BaseResponseVO.FailureResponse(((PeerException) e).getErrorCode());
+        }
+        return BaseResponseVO.FailureResponse(ErrorCode.SYSTEM_ERROR);
     }
 }

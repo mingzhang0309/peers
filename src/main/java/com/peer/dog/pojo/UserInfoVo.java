@@ -22,7 +22,7 @@ public class UserInfoVo implements Serializable {
 
     private String headImgUrl;
 
-    private Long pickCount;
+    private Long pickCount = 0L;
 
     public UserInfoVo() {
     }

@@ -4,6 +4,8 @@ import com.aliyuncs.exceptions.ClientException;
 import com.google.common.collect.Lists;
 import com.peer.dog.dao.*;
 import com.peer.dog.dao.entity.*;
+import com.peer.dog.exception.ErrorCode;
+import com.peer.dog.exception.PeerException;
 import com.peer.dog.pojo.*;
 import com.peer.dog.service.sms.SmsService;
 import com.peer.dog.util.BaseUtil;
@@ -61,17 +63,28 @@ public class UserControllerV1 {
             return BaseResponseVO.SuccessResponse(response);
         }
 
+        PeerUserExample example = new PeerUserExample();
+        example.createCriteria().andPhoneEqualTo(getCaptchaVo.getPhone());
+        List<PeerUser> users = peerUserMapper.selectByExample(example);
+        //没构造过的才需要，避免用户多次索要验证码的情况
+        PeerUser peerUser = new PeerUser();
         TbCaptcha tbCaptcha = new TbCaptcha();
+
+        if(CollectionUtils.isEmpty(users)) {
+            //构造用户信息提前
+            peerUser.setPhone(getCaptchaVo.getPhone());
+            peerUserMapper.insertSelective(peerUser);
+            tbCaptcha.setUserId(peerUser.getId());
+        } else {
+            tbCaptcha.setUserId(users.get(0).getId());
+        }
+
         String value = CapthaUtil.generate();
         tbCaptcha.setContent(String.format(GET_CAPTCHA_MESSAGE, value));
         tbCaptcha.setValue(value);
         tbCaptcha.setSessionId(BaseUtil.uuidGen());
         tbCaptcha.setPhone(getCaptchaVo.getPhone());
-
-        //构造用户信息提前
-        PeerUser peerUser = new PeerUser();
-        peerUser.setPhone(tbCaptcha.getPhone());
-        peerUserMapper.insertSelective(peerUser);
+        tbCaptchaMapper.insertSelective(tbCaptcha);
 
 //        try {
 //            smsService.sendSms(tbCaptcha.getPhone(), "宠物说", "SMS_137875107", tbCaptcha.getContent());
@@ -80,8 +93,8 @@ public class UserControllerV1 {
 //            throw new RuntimeException("短信发送失败");
 //        }
 
-        tbCaptchaMapper.insertSelective(tbCaptcha);
         response.setMember(false);
+        response.setUserId(peerUser.getId());
         response.setSessionId(tbCaptcha.getSessionId());
 
         logger.info("获取验证码结果 {}", response);
@@ -95,16 +108,20 @@ public class UserControllerV1 {
         example.createCriteria().andSessionIdEqualTo(checkCaptchaVo.getSessionId()).andValueEqualTo(checkCaptchaVo.getCaptcha());
         List<TbCaptcha> tbCaptchas = tbCaptchaMapper.selectByExample(example);
 
-        if(!"1580".equals(checkCaptchaVo.getCaptcha()) || (tbCaptchas == null || tbCaptchas.size() != 1)) {
-            return BaseResponseVO.FailureResponse("验证码错误");
+        if ("1580".equals(checkCaptchaVo.getCaptcha())) {
+        } else {
+            if ((tbCaptchas == null || tbCaptchas.size() != 1)) {
+                throw new PeerException(ErrorCode.CAPTCHA_ERROE);
+            }
         }
 
         UserBaseResponseVO baseResponseVO = new UserBaseResponseVO();
         TbLogin tbLogin = new TbLogin();
-        tbLogin.setUserId(HttpHeaderUtil.getUserId());
+        tbLogin.setUserId(tbCaptchas.get(0).getUserId());
         tbLogin.setToken(BaseUtil.uuidGen());
         tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
         tbLoginMapper.insertSelective(tbLogin);
+
         baseResponseVO.setToken(tbLogin.getToken());
         baseResponseVO.setExpireTime(tbLogin.getExpireTime());
         baseResponseVO.setUserId(tbLogin.getUserId());
@@ -113,6 +130,10 @@ public class UserControllerV1 {
 
     @PostMapping("/login/check")
     public BaseResponseVO login(@RequestBody LoginRequest loginRequest) {
+        if(StringUtils.isEmpty(loginRequest.getPassword())) {
+            throw new PeerException(ErrorCode.PASSWORD_EMPTY);
+        }
+
         PeerUserExample peerUserExample = new PeerUserExample();
         peerUserExample.createCriteria().andPhoneEqualTo(loginRequest.getPhone()).andPasswordEqualTo(loginRequest.getPassword());
         List<PeerUser> peerUsers = peerUserMapper.selectByExample(peerUserExample);
@@ -125,7 +146,7 @@ public class UserControllerV1 {
             return BaseResponseVO.SuccessResponse(tbLogin);
         }
 
-        return BaseResponseVO.FailureResponse("账号或密码错误");
+        return BaseResponseVO.FailureResponse(ErrorCode.PASSWORD_ERROR);
     }
 
     @PostMapping("/pass")

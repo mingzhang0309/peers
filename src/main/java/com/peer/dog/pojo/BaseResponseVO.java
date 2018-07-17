@@ -1,5 +1,7 @@
 package com.peer.dog.pojo;
 
+import com.peer.dog.exception.ErrorCode;
+
 import java.io.Serializable;
 
 /**
@@ -41,6 +43,17 @@ public class BaseResponseVO<T> implements Serializable {
         BaseResponseVO baseResponseVO = new BaseResponseVO();
         baseResponseVO.status = -1;
         baseResponseVO.message = message;
+        return baseResponseVO;
+    }
+
+    public static BaseResponseVO FailureResponse(ErrorCode errorCode) {
+        BaseResponseVO baseResponseVO = new BaseResponseVO();
+        baseResponseVO.status = errorCode.getCode();
+        baseResponseVO.message = errorCode.getMessage();
+
+        if(errorCode == ErrorCode.NO_INFO) {
+            baseResponseVO.setNextHref("/user/pass");
+        }
         return baseResponseVO;
     }
 
