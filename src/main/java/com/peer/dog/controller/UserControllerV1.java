@@ -60,25 +60,12 @@ public class UserControllerV1 {
         GetCaptchaResponse response = new GetCaptchaResponse();
         if(!CollectionUtils.isEmpty(peerUsers)) {
             response.setMember(true);
-            return BaseResponseVO.SuccessResponse(response);
+            BaseResponseVO responseVO = BaseResponseVO.SuccessResponse(response);
+            responseVO.setNextHref("/user/login");
+            return responseVO;
         }
 
-        PeerUserExample example = new PeerUserExample();
-        example.createCriteria().andPhoneEqualTo(getCaptchaVo.getPhone());
-        List<PeerUser> users = peerUserMapper.selectByExample(example);
-        //没构造过的才需要，避免用户多次索要验证码的情况
-        PeerUser peerUser = new PeerUser();
         TbCaptcha tbCaptcha = new TbCaptcha();
-
-        if(CollectionUtils.isEmpty(users)) {
-            //构造用户信息提前
-            peerUser.setPhone(getCaptchaVo.getPhone());
-            peerUserMapper.insertSelective(peerUser);
-            tbCaptcha.setUserId(peerUser.getId());
-        } else {
-            tbCaptcha.setUserId(users.get(0).getId());
-        }
-
         String value = CapthaUtil.generate();
         tbCaptcha.setContent(String.format(GET_CAPTCHA_MESSAGE, value));
         tbCaptcha.setValue(value);
@@ -94,12 +81,12 @@ public class UserControllerV1 {
 //        }
 
         response.setMember(false);
-        response.setUserId(peerUser.getId());
         response.setSessionId(tbCaptcha.getSessionId());
 
         logger.info("获取验证码结果 {}", response);
 
-        return BaseResponseVO.SuccessResponse(response);
+        BaseResponseVO responseVO = BaseResponseVO.SuccessResponse(response);
+        return responseVO;
     }
 
     @PostMapping("/captcha/check")
@@ -115,17 +102,7 @@ public class UserControllerV1 {
             }
         }
 
-        UserBaseResponseVO baseResponseVO = new UserBaseResponseVO();
-        TbLogin tbLogin = new TbLogin();
-        tbLogin.setUserId(tbCaptchas.get(0).getUserId());
-        tbLogin.setToken(BaseUtil.uuidGen());
-        tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
-        tbLoginMapper.insertSelective(tbLogin);
-
-        baseResponseVO.setToken(tbLogin.getToken());
-        baseResponseVO.setExpireTime(tbLogin.getExpireTime());
-        baseResponseVO.setUserId(tbLogin.getUserId());
-        return BaseResponseVO.SuccessResponse(baseResponseVO);
+        return BaseResponseVO.SuccessResponse(checkCaptchaVo);
     }
 
     @PostMapping("/login/check")
@@ -151,10 +128,23 @@ public class UserControllerV1 {
 
     @PostMapping("/pass")
     public BaseResponseVO setPass(@RequestBody LoginRequest loginRequest) {
+        TbCaptchaExample example = new TbCaptchaExample();
+        example.createCriteria().andSessionIdEqualTo(loginRequest.getSessionId());
+        List<TbCaptcha> tbCaptchas = tbCaptchaMapper.selectByExample(example);
+        if(tbCaptchas == null || tbCaptchas.size() != 1) {
+            throw new PeerException(ErrorCode.NO_INFO);
+        }
+
         PeerUser peerUser = new PeerUser();
-        peerUser.setId(HttpHeaderUtil.getUserId());
+        peerUser.setPhone(loginRequest.getPhone());
         peerUser.setPassword(loginRequest.getPassword());
-        peerUserMapper.updateByPrimaryKeySelective(peerUser);
+        peerUserMapper.insertSelective(peerUser);
+
+        TbLogin tbLogin = new TbLogin();
+        tbLogin.setUserId(peerUser.getId());
+        tbLogin.setToken(BaseUtil.uuidGen());
+        tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
+        tbLoginMapper.insertSelective(tbLogin);
 
         UserBaseResponseVO userBaseResponseVO = new UserBaseResponseVO();
         userBaseResponseVO.setUserId(HttpHeaderUtil.getUserId());

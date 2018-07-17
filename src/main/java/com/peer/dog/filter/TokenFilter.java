@@ -61,14 +61,14 @@ public class TokenFilter implements Filter {
                     throw new PeerException(ErrorCode.NO_LOGIN);
                 }
 
-                if(!NO_NEED_CHECK_USERINFO_FILTER.contains(path)) {
-                    PeerUser user = peerUserMapper.selectByPrimaryKey(tbLogins.get(0).getUserId());
-                    if (StringUtils.isEmpty(user.getPassword())) {
-//                        throw new PeerException(ErrorCode.NO_INFO);
-                        ((HttpServletResponse)servletResponse).sendRedirect("/error/");
-                        return;
-                    }
-                }
+//                if(!NO_NEED_CHECK_USERINFO_FILTER.contains(path)) {
+//                    PeerUser user = peerUserMapper.selectByPrimaryKey(tbLogins.get(0).getUserId());
+//                    if (StringUtils.isEmpty(user.getPassword())) {
+////                        throw new PeerException(ErrorCode.NO_INFO);
+//                        ((HttpServletResponse)servletResponse).sendRedirect("/error/");
+//                        return;
+//                    }
+//                }
             }
 
             if(!CollectionUtils.isEmpty(tbLogins)) {
