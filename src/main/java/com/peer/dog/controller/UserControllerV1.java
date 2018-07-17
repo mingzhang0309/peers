@@ -148,6 +148,8 @@ public class UserControllerV1 {
 
         UserBaseResponseVO userBaseResponseVO = new UserBaseResponseVO();
         userBaseResponseVO.setUserId(HttpHeaderUtil.getUserId());
+        userBaseResponseVO.setToken(tbLogin.getToken());
+        userBaseResponseVO.setExpireTime(tbLogin.getExpireTime());
 
         return BaseResponseVO.SuccessResponse(userBaseResponseVO);
     }
