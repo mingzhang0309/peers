@@ -36,9 +36,6 @@ public class TokenFilter implements Filter {
     @Resource
     TbLoginMapper tbLoginMapper;
 
-    @Resource
-    PeerUserMapper peerUserMapper;
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
