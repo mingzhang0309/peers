@@ -50,9 +50,10 @@ public class UserControllerV1 {
 
     @PostMapping("/captcha")
     public BaseResponseVO getCaptcha(@RequestBody GetCaptchaVo getCaptchaVo) {
+        logger.info("获取验证码 {}", getCaptchaVo);
         //send 验证码
         PeerUserExample peerUserExample = new PeerUserExample();
-        peerUserExample.createCriteria().andPhoneEqualTo(getCaptchaVo.getPhone());
+        peerUserExample.createCriteria().andPhoneEqualTo(getCaptchaVo.getPhone()).andPasswordIsNotNull();
         List<PeerUser> peerUsers = peerUserMapper.selectByExample(peerUserExample);
         GetCaptchaResponse response = new GetCaptchaResponse();
         if(!CollectionUtils.isEmpty(peerUsers)) {
@@ -67,6 +68,11 @@ public class UserControllerV1 {
         tbCaptcha.setSessionId(BaseUtil.uuidGen());
         tbCaptcha.setPhone(getCaptchaVo.getPhone());
 
+        //构造用户信息提前
+        PeerUser peerUser = new PeerUser();
+        peerUser.setPhone(tbCaptcha.getPhone());
+        peerUserMapper.insertSelective(peerUser);
+
 //        try {
 //            smsService.sendSms(tbCaptcha.getPhone(), "宠物说", "SMS_137875107", tbCaptcha.getContent());
 //        } catch (ClientException e) {
@@ -78,6 +84,8 @@ public class UserControllerV1 {
         response.setMember(false);
         response.setSessionId(tbCaptcha.getSessionId());
 
+        logger.info("获取验证码结果 {}", response);
+
         return BaseResponseVO.SuccessResponse(response);
     }
 
@@ -86,14 +94,21 @@ public class UserControllerV1 {
         TbCaptchaExample example = new TbCaptchaExample();
         example.createCriteria().andSessionIdEqualTo(checkCaptchaVo.getSessionId()).andValueEqualTo(checkCaptchaVo.getCaptcha());
         List<TbCaptcha> tbCaptchas = tbCaptchaMapper.selectByExample(example);
-        if("1580".equals(checkCaptchaVo.getCaptcha())) {
-            return BaseResponseVO.SuccessResponse(true);
+
+        if(!"1580".equals(checkCaptchaVo.getCaptcha()) || (tbCaptchas == null || tbCaptchas.size() != 1)) {
+            return BaseResponseVO.FailureResponse("验证码错误");
         }
 
-        if(tbCaptchas == null || tbCaptchas.size() != 1) {
-            return BaseResponseVO.SuccessResponse(false);
-        }
-        return BaseResponseVO.SuccessResponse(true);
+        UserBaseResponseVO baseResponseVO = new UserBaseResponseVO();
+        TbLogin tbLogin = new TbLogin();
+        tbLogin.setUserId(HttpHeaderUtil.getUserId());
+        tbLogin.setToken(BaseUtil.uuidGen());
+        tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
+        tbLoginMapper.insertSelective(tbLogin);
+        baseResponseVO.setToken(tbLogin.getToken());
+        baseResponseVO.setExpireTime(tbLogin.getExpireTime());
+        baseResponseVO.setUserId(tbLogin.getUserId());
+        return BaseResponseVO.SuccessResponse(baseResponseVO);
     }
 
     @PostMapping("/login/check")
@@ -110,35 +125,31 @@ public class UserControllerV1 {
             return BaseResponseVO.SuccessResponse(tbLogin);
         }
 
-        return BaseResponseVO.SuccessResponse(false);
+        return BaseResponseVO.FailureResponse("账号或密码错误");
     }
 
     @PostMapping("/pass")
     public BaseResponseVO setPass(@RequestBody LoginRequest loginRequest) {
         PeerUser peerUser = new PeerUser();
-        peerUser.setPhone(loginRequest.getPhone());
+        peerUser.setId(HttpHeaderUtil.getUserId());
         peerUser.setPassword(loginRequest.getPassword());
-        peerUserMapper.insertSelective(peerUser);
+        peerUserMapper.updateByPrimaryKeySelective(peerUser);
 
-        TbLogin tbLogin = new TbLogin();
-        tbLogin.setUserId(peerUser.getId());
-        tbLogin.setToken(BaseUtil.uuidGen());
-        tbLogin.setExpireTime(Date.from(LocalDateTime.now().plusYears(5).atZone(ZoneId.systemDefault()).toInstant()));
-        tbLoginMapper.insertSelective(tbLogin);
-        return BaseResponseVO.SuccessResponse(tbLogin);
+        UserBaseResponseVO userBaseResponseVO = new UserBaseResponseVO();
+        userBaseResponseVO.setUserId(HttpHeaderUtil.getUserId());
+
+        return BaseResponseVO.SuccessResponse(userBaseResponseVO);
     }
 
-    @PutMapping()
+    @PutMapping("/info")
     public BaseResponseVO setInfos(@RequestBody UserInfoVo userInfoVo) {
         PeerUser peerUser = new PeerUser();
         peerUser.setNick(userInfoVo.getNick());
         peerUser.setIntroduction(userInfoVo.getIntroduction());
         peerUser.setHeadUrl(userInfoVo.getHeadImgUrl());
         peerUser.setSex(userInfoVo.getSex());
-
-        PeerUserExample example = new PeerUserExample();
-        example.createCriteria().andPhoneEqualTo(userInfoVo.getPhone());
-        peerUserMapper.updateByExampleSelective(peerUser, example);
+        peerUser.setId(HttpHeaderUtil.getUserId());
+        peerUserMapper.updateByPrimaryKeySelective(peerUser);
 
         return BaseResponseVO.SuccessResponse(userInfoVo);
     }

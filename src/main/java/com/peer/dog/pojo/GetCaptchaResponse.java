@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author stephen.zhang
  * @date 2018/6/10
  */
-public class GetCaptchaResponse implements Serializable {
+public class GetCaptchaResponse extends UserBaseResponseVO implements Serializable {
     private static final long serialVersionUID = -6704011972180459294L;
     private boolean isMember;
 
