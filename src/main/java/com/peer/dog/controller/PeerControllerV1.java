@@ -1,9 +1,6 @@
 package com.peer.dog.controller;
 
-import com.peer.dog.dao.PeerMapper;
-import com.peer.dog.dao.PeerUserMapper;
-import com.peer.dog.dao.PeerVarietiesMapper;
-import com.peer.dog.dao.UserPeerRelaMapper;
+import com.peer.dog.dao.*;
 import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.BaseResponseVO;
 import com.peer.dog.pojo.PeerInfoVo;
@@ -30,6 +27,9 @@ public class PeerControllerV1 {
 
     @Resource
     PeerVarietiesMapper peerVarietiesMapper;
+
+    @Resource
+    FeedBaseMapper feedBaseMapper;
 
     @PostMapping
     public BaseResponseVO setInfos(@RequestBody PeerInfoVo peerInfoVo) {
@@ -71,6 +71,11 @@ public class PeerControllerV1 {
         peerInfoVo.setPeerHeadUrl(peer.getPeerHeadUrl());
         peerInfoVo.setSex(peer.getSex());
         peerInfoVo.setVarieties(peer.getVarieties());
+
+        FeedBaseExample feedBaseExample = new FeedBaseExample();
+        feedBaseExample.createCriteria().andPeerIdEqualTo(id);
+        Integer feedCount = feedBaseMapper.countByExample(feedBaseExample);
+        peerInfoVo.setFeedCount(feedCount);
 
         UserPeerRelaExample example = new UserPeerRelaExample();
         example.createCriteria().andPeerIdEqualTo(peer.getId()).andRelaEqualTo(0);

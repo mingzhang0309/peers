@@ -44,29 +44,14 @@ public class FeedController {
 
     /**
      * 推荐
-     * 
+     *
      * @return
      */
-    @GetMapping()
-    public BaseResponseVO getFeed(@RequestParam String startDateTime) {
+    @GetMapping("/userId")
+    public BaseResponseVO getMyFeedByUserId(@RequestParam Integer userId) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
-        if(StringUtils.isEmpty(startDateTime)) {
-            startDateTime = "1970-01-01 00:00:00";
-        }
-        LocalDateTime startTime;
-        try {
 
-            startTime = LocalDateTime
-                    .parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        } catch (Exception e) {
-            startTime = LocalDateTime
-                    .parse("2018-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        }
-//        feedBaseExample.createCriteria().andOwnerIdNotEqualTo(HttpHeaderUtil.getUserId())
-//                .andCreateTimeGreaterThan(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
-
-        feedBaseExample.createCriteria()
-                .andCreateTimeGreaterThan(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
+        feedBaseExample.createCriteria().andOwnerIdEqualTo(userId);
 
         RowBounds rowBounds = new RowBounds(0, 10);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
@@ -74,6 +59,12 @@ public class FeedController {
             return BaseResponseVO.SuccessResponse(null);
         }
 
+        List<FeedBaseResponseVO> feedBaseResponseVOS = addComments(feedBases);
+
+        return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
+    }
+
+    private List<FeedBaseResponseVO> addComments(List<FeedBase> feedBases) {
         //留言信息
         List<Integer> commentsVO = Lists.newArrayList();
         feedBases.stream().forEach(feedBase -> commentsVO.add(feedBase.getId()));
@@ -106,10 +97,45 @@ public class FeedController {
                 }
                 feedBaseResponseVOS.add(vo);
             });
-            return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
+            return feedBaseResponseVOS;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 推荐
+     * 
+     * @return
+     */
+    @GetMapping()
+    public BaseResponseVO getFeed(@RequestParam String startDateTime) {
+        FeedBaseExample feedBaseExample = new FeedBaseExample();
+        if(StringUtils.isEmpty(startDateTime)) {
+            startDateTime = "1970-01-01 00:00:00";
+        }
+        LocalDateTime startTime;
+        try {
+
+            startTime = LocalDateTime
+                    .parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (Exception e) {
+            startTime = LocalDateTime
+                    .parse("2018-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
 
-        return BaseResponseVO.SuccessResponse(null);
+        feedBaseExample.createCriteria()
+                .andCreateTimeGreaterThan(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
+
+        RowBounds rowBounds = new RowBounds(0, 10);
+        List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
+        if(CollectionUtils.isEmpty(feedBases)) {
+            return BaseResponseVO.SuccessResponse(null);
+        }
+
+        List<FeedBaseResponseVO> feedBaseResponseVOS = addComments(feedBases);
+
+        return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
     }
 
     /**

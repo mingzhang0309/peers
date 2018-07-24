@@ -147,7 +147,7 @@ public class UserControllerV1 {
         tbLoginMapper.insertSelective(tbLogin);
 
         UserBaseResponseVO userBaseResponseVO = new UserBaseResponseVO();
-        userBaseResponseVO.setUserId(HttpHeaderUtil.getUserId());
+        userBaseResponseVO.setUserId(peerUser.getId());
         userBaseResponseVO.setToken(tbLogin.getToken());
         userBaseResponseVO.setExpireTime(tbLogin.getExpireTime());
 
