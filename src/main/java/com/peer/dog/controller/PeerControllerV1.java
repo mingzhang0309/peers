@@ -1,13 +1,17 @@
 package com.peer.dog.controller;
 
+import com.google.common.collect.Lists;
 import com.peer.dog.dao.*;
 import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.BaseResponseVO;
 import com.peer.dog.pojo.PeerInfoVo;
+import com.peer.dog.util.HttpHeaderUtil;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author stephen.zhang
@@ -88,5 +92,45 @@ public class PeerControllerV1 {
     public BaseResponseVO getVarieties() {
         List<PeerVarieties> peerVarieties = peerVarietiesMapper.selectByExample(null);
         return BaseResponseVO.SuccessResponse(peerVarieties);
+    }
+
+    /**
+     * 先根据自己的宠物标签推荐，没有的话再按品种推荐
+     * 不考虑分页
+     * @return
+     */
+    @GetMapping("/recommend")
+    public BaseResponseVO recommend() {
+        Integer userId = HttpHeaderUtil.getUserId();
+
+        UserPeerRelaExample userPeerRelaExample = new UserPeerRelaExample();
+        userPeerRelaExample.createCriteria().andUserIdEqualTo(userId);
+        List<UserPeerRela> userPeerRelas = userPeerRelaMapper.selectByExample(userPeerRelaExample);
+
+        PeerExample peerExample = new PeerExample();
+        List<Integer> peerIds = userPeerRelas.stream().map(UserPeerRela::getPeerId).collect(Collectors.toList());
+        peerExample.createCriteria().andIdIn(peerIds);
+        List<Peer> peers = peerMapper.selectByExample(peerExample);
+        List<String> peerVarietiesList = peers.stream().map(Peer::getVarieties).collect(Collectors.toList());
+
+        PeerExample peerExample2 = new PeerExample();
+        peerExample2.createCriteria().andVarietiesIn(peerVarietiesList).andOwnerIdNotEqualTo(userId);
+        List<Peer> recommendPeers = peerMapper.selectByExample(peerExample);
+
+        if(CollectionUtils.isEmpty(recommendPeers)) {
+            return BaseResponseVO.SuccessResponse(null);
+        } else {
+            List<PeerInfoVo> peerInfoVos = Lists.newArrayList();
+            for (Peer peer : recommendPeers) {
+                PeerInfoVo peerInfoVo = new PeerInfoVo();
+                peerInfoVo.setId(peer.getId());
+                peerInfoVo.setName(peer.getName());
+                peerInfoVo.setPeerHeadUrl(peer.getPeerHeadUrl());
+                peerInfoVo.setSex(peer.getSex());
+                peerInfoVo.setVarieties(peer.getVarieties());
+                peerInfoVos.add(peerInfoVo);
+            }
+            return BaseResponseVO.SuccessResponse(peerInfoVos);
+        }
     }
 }

@@ -50,6 +50,9 @@ public class UserControllerV1 {
     @Resource
     UserPeerRelaMapper userPeerRelaMapper;
 
+    @Resource
+    FeedBaseMapper feedBaseMapper;
+
     @PostMapping("/captcha")
     public BaseResponseVO getCaptcha(@RequestBody GetCaptchaVo getCaptchaVo) {
         logger.info("获取验证码 {}", getCaptchaVo);
@@ -214,13 +217,28 @@ public class UserControllerV1 {
         UserPeerRelaExample example = new UserPeerRelaExample();
         example.createCriteria().andUserIdEqualTo(id);
         List<UserPeerRela> userPeerRelas = userPeerRelaMapper.selectByExample(example);
-        List<Peer> peers = Lists.newArrayList();
+        List<PeerInfoVo> peers = Lists.newArrayList();
         if(!CollectionUtils.isEmpty(userPeerRelas)) {
             for (UserPeerRela userPeerRela : userPeerRelas) {
                 Peer peer = peerMapper.selectByPrimaryKey(userPeerRela.getPeerId());
-                peers.add(peer);
+
+                PeerInfoVo peerInfoVo = new PeerInfoVo();
+                peerInfoVo.setId(peer.getId());
+                peerInfoVo.setName(peer.getName());
+                peerInfoVo.setPeerHeadUrl(peer.getPeerHeadUrl());
+                peerInfoVo.setSex(peer.getSex());
+                peerInfoVo.setVarieties(peer.getVarieties());
+                peerInfoVo.setOwnId(id);
+                peerInfoVo.setPeerTag(peer.getPeerTag());
+
+                FeedBaseExample feedBaseExample = new FeedBaseExample();
+                feedBaseExample.createCriteria().andPeerIdEqualTo(id);
+                Integer feedCount = feedBaseMapper.countByExample(feedBaseExample);
+                peerInfoVo.setFeedCount(feedCount);
+                peers.add(peerInfoVo);
             }
         }
+
         return BaseResponseVO.SuccessResponse(peers);
     }
 }

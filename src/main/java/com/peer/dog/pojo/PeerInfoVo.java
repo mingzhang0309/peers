@@ -50,6 +50,11 @@ public class PeerInfoVo implements Serializable {
      */
     private Integer feedCount;
 
+    /**
+     * 宠物标签
+     */
+    private String peerTag;
+
     public PeerInfoVo() {
     }
 
@@ -117,6 +122,14 @@ public class PeerInfoVo implements Serializable {
         this.feedCount = feedCount;
     }
 
+    public void setPeerTag(String peerTag) {
+        this.peerTag = peerTag;
+    }
+
+    public String getPeerTag() {
+        return peerTag;
+    }
+
     @Override
     public String toString() {
         return "PeerInfoVo{" +
@@ -128,6 +141,7 @@ public class PeerInfoVo implements Serializable {
                 ", peerHeadUrl='" + peerHeadUrl + '\'' +
                 ", ownId=" + ownId +
                 ", feedCount=" + feedCount +
+                ", peerTag='" + peerTag + '\'' +
                 '}';
     }
 }

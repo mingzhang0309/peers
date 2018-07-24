@@ -28,7 +28,8 @@ import java.util.*;
 @WebFilter(filterName = "tokenFilter", urlPatterns = "/*")
 public class TokenFilter implements Filter {
     private static final Set<String> NEED_FILTER = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList("/comment", "/feed/follow", "/feed/pick", "/user", "/user/peers", "/user/info")));
+            Arrays.asList("/comment", "/feed/follow", "/feed/pick", "/user", "/user/peers", "/user/info"
+            ,"/peer/recommend")));
 
     private static final Set<String> NO_NEED_CHECK_USERINFO_FILTER = Collections.unmodifiableSet(new HashSet<>(
             Arrays.asList("/user/pass")));
