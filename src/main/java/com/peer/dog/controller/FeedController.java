@@ -5,11 +5,9 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.peer.dog.dao.FeedBaseMapper;
 import com.peer.dog.dao.FeedPickMapper;
+import com.peer.dog.dao.PeerMapper;
 import com.peer.dog.dao.UserPeerRelaMapper;
-import com.peer.dog.dao.entity.FeedBase;
-import com.peer.dog.dao.entity.FeedBaseExample;
-import com.peer.dog.dao.entity.FeedPick;
-import com.peer.dog.dao.entity.FeedPickExample;
+import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.*;
 import com.peer.dog.service.FeedCommentsService;
 import com.peer.dog.service.UserPeerRelaService;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +40,9 @@ public class FeedController {
 
     @Resource
     FeedCommentsService feedCommentsService;
+
+    @Resource
+    PeerMapper peerMapper;
 
     /**
      * 推荐
@@ -91,6 +93,7 @@ public class FeedController {
                 vo.setOwnerId(feedBase.getOwnerId());
                 vo.setPeerId(feedBase.getPeerId());
                 vo.setThumbsCount(feedBase.getThumbsCount());
+                vo.setTime(feedBase.getCreateTime());
 
                 if (feedCommentsResponseVO != null && feedCommentsResponseVO.getCommentVOS() != null) {
                     vo.setCommentVO(feedCommentsResponseVO.getCommentVOS().get(feedBase.getId()));
@@ -135,7 +138,30 @@ public class FeedController {
 
         List<FeedBaseResponseVO> feedBaseResponseVOS = addComments(feedBases);
 
-        return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
+        FeedRecommedResponseVO feedRecommedResponse = addExtInfo(feedBaseResponseVOS);
+
+        return BaseResponseVO.SuccessResponse(feedRecommedResponse);
+    }
+
+    private FeedRecommedResponseVO addExtInfo(List<FeedBaseResponseVO> feedBases) {
+        FeedRecommedResponseVO feedRecommedResponseVO = new FeedRecommedResponseVO();
+
+
+        Date nextStartTime = null;
+        for (FeedBaseResponseVO feedBase : feedBases) {
+            Peer peer = peerMapper.selectByPrimaryKey(feedBase.getPeerId());
+            feedBase.setSex(peer.getSex());
+            feedBase.setVarieties(peer.getVarieties());
+            if(nextStartTime == null || nextStartTime.before(feedBase.getTime())) {
+                nextStartTime = feedBase.getTime();
+            }
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        feedRecommedResponseVO.setStartDateTime(formatter.format(nextStartTime));
+        feedRecommedResponseVO.setFeedBaseResponseVOS(feedBases);
+
+        return feedRecommedResponseVO;
     }
 
     /**

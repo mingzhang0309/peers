@@ -1,6 +1,7 @@
 package com.peer.dog.pojo;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -27,6 +28,12 @@ public class FeedBaseResponseVO implements Serializable {
     private String location;
 
     private boolean isCanThumbs;
+
+    private Short sex;
+
+    private String varieties;
+
+    private Date time;
 
     private Map<Integer, CommentVO> commentVO;
 
@@ -110,6 +117,30 @@ public class FeedBaseResponseVO implements Serializable {
         this.commentVO = commentVO;
     }
 
+    public Short getSex() {
+        return sex;
+    }
+
+    public void setSex(Short sex) {
+        this.sex = sex;
+    }
+
+    public String getVarieties() {
+        return varieties;
+    }
+
+    public void setVarieties(String varieties) {
+        this.varieties = varieties;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
     @Override
     public String toString() {
         return "FeedBaseResponseVO{" +
@@ -122,6 +153,9 @@ public class FeedBaseResponseVO implements Serializable {
                 ", ownerId=" + ownerId +
                 ", location='" + location + '\'' +
                 ", isCanThumbs=" + isCanThumbs +
+                ", sex=" + sex +
+                ", varieties='" + varieties + '\'' +
+                ", time='" + time + '\'' +
                 ", commentVO=" + commentVO +
                 '}';
     }
