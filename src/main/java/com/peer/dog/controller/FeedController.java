@@ -63,7 +63,9 @@ public class FeedController {
 
         List<FeedBaseResponseVO> feedBaseResponseVOS = addComments(feedBases);
 
-        return BaseResponseVO.SuccessResponse(feedBaseResponseVOS);
+        FeedRecommedResponseVO feedRecommedResponse = addExtInfo(feedBaseResponseVOS);
+
+        return BaseResponseVO.SuccessResponse(feedRecommedResponse);
     }
 
     private List<FeedBaseResponseVO> addComments(List<FeedBase> feedBases) {
