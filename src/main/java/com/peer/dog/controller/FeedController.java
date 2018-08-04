@@ -112,7 +112,7 @@ public class FeedController {
      * @return
      */
     @GetMapping()
-    public BaseResponseVO getFeed(@RequestParam String startDateTime) {
+    public BaseResponseVO getFeed(@RequestParam(required = false) String startDateTime) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
         if(StringUtils.isEmpty(startDateTime)) {
             startDateTime = "1970-01-01 00:00:00";
