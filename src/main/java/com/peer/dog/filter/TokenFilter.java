@@ -29,7 +29,7 @@ import java.util.*;
 public class TokenFilter implements Filter {
     private static final Set<String> NEED_FILTER = Collections.unmodifiableSet(new HashSet<>(
             Arrays.asList("/comment","/feed", "/feed/follow", "/feed/pick", "/user", "/user/peers", "/user/info"
-            ,"/peer/recommend")));
+            ,"/peer/recommend", "/peer")));
 
     private static final Set<String> NO_NEED_CHECK_USERINFO_FILTER = Collections.unmodifiableSet(new HashSet<>(
             Arrays.asList("/user/pass")));

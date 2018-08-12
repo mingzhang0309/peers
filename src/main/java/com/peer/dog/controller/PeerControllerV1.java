@@ -7,6 +7,7 @@ import com.peer.dog.pojo.BaseResponseVO;
 import com.peer.dog.pojo.PeerInfoVo;
 import com.peer.dog.util.HttpHeaderUtil;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,12 +45,8 @@ public class PeerControllerV1 {
         peer.setPeerHeadUrl(peerInfoVo.getPeerHeadUrl());
         peer.setPeerTag("");
 
-        PeerUserExample example = new PeerUserExample();
-        example.createCriteria().andPhoneEqualTo(peerInfoVo.getPhone());
-        List<PeerUser> peerUsers = peerUserMapper.selectByExample(example);
-
         //插入宠物信息
-        peer.setOwnerId(peerUsers.get(0).getId());
+        peer.setOwnerId(HttpHeaderUtil.getUserId());
         int peerId = peerMapper.insertSelective(peer);
 
         //修改用户宠物关联信息
