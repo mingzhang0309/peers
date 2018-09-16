@@ -36,7 +36,7 @@ public class PeerControllerV1 {
     @Resource
     FeedBaseMapper feedBaseMapper;
 
-    @PostMapping
+    @PostMapping("/")
     public BaseResponseVO setInfos(@RequestBody PeerInfoVo peerInfoVo) {
         Peer peer = new Peer();
         peer.setName(peerInfoVo.getName());

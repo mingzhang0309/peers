@@ -138,6 +138,20 @@ public class UserControllerV1 {
             throw new PeerException(ErrorCode.NO_INFO);
         }
 
+        PeerUserExample example1 = new PeerUserExample();
+        example1.createCriteria().andPhoneEqualTo(loginRequest.getPhone());
+        List<PeerUser>  peerUsers = peerUserMapper.selectByExample(example1);
+        if(CollectionUtils.isEmpty(peerUsers)) {
+            PeerUser peerUser = new PeerUser();
+            peerUser.setPhone(loginRequest.getPhone());
+            peerUser.setPassword(loginRequest.getPassword());
+            peerUserMapper.insertSelective(peerUser);
+        } else {
+            PeerUser peerUser = peerUsers.get(0);
+            peerUser.setPassword(loginRequest.getPassword());
+            peerUserMapper.updateByPrimaryKeySelective(peerUser);
+        }
+
         PeerUser peerUser = new PeerUser();
         peerUser.setPhone(loginRequest.getPhone());
         peerUser.setPassword(loginRequest.getPassword());
