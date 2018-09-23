@@ -54,7 +54,7 @@ public class TokenFilter implements Filter {
         String path = request.getRequestURI().substring(request.getContextPath().length()).replaceAll("[/]+$", "");
         String token = request.getHeader(HttpHeaderUtil.TOKEN);
 
-        logger.info("patch {} token {}", path, token);
+        logger.info("path {} token {}", path, token);
 
         if(NEED_FILTER.contains(path) && StringUtils.isEmpty(token)) {
             throw new PeerException(ErrorCode.NO_TOKEN);
