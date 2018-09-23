@@ -1,5 +1,7 @@
 package com.peer.dog.pojo;
 
+import java.util.List;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
@@ -35,7 +37,15 @@ public class FeedBaseResponseVO implements Serializable {
 
     private Date time;
 
+    private String userNick;
+
+    private String headUrl;
+
+    private String petName;
+
     private Map<Integer, CommentVO> commentVO;
+
+    private List<CommentVO> commentVOList;
 
     public Integer getId() {
         return id;
@@ -141,6 +151,38 @@ public class FeedBaseResponseVO implements Serializable {
         this.time = time;
     }
 
+    public String getUserNick() {
+        return userNick;
+    }
+
+    public void setUserNick(String userNick) {
+        this.userNick = userNick;
+    }
+
+    public String getHeadUrl() {
+        return headUrl;
+    }
+
+    public void setHeadUrl(String headUrl) {
+        this.headUrl = headUrl;
+    }
+
+    public String getPetName() {
+        return petName;
+    }
+
+    public void setPetName(String petName) {
+        this.petName = petName;
+    }
+
+    public List<CommentVO> getCommentVOList() {
+        return commentVOList;
+    }
+
+    public void setCommentVOList(List<CommentVO> commentVOList) {
+        this.commentVOList = commentVOList;
+    }
+
     @Override
     public String toString() {
         return "FeedBaseResponseVO{" +
@@ -155,8 +197,12 @@ public class FeedBaseResponseVO implements Serializable {
                 ", isCanThumbs=" + isCanThumbs +
                 ", sex=" + sex +
                 ", varieties='" + varieties + '\'' +
-                ", time='" + time + '\'' +
+                ", time=" + time +
+                ", userNick='" + userNick + '\'' +
+                ", headUrl='" + headUrl + '\'' +
+                ", petName='" + petName + '\'' +
                 ", commentVO=" + commentVO +
+                ", commentVOList=" + commentVOList +
                 '}';
     }
 }

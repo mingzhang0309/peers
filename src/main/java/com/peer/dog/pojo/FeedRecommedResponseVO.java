@@ -12,10 +12,20 @@ public class FeedRecommedResponseVO implements Serializable {
 
     private String startDateTime;
 
+    private Long startDateTimeLong;
+
     List<FeedBaseResponseVO> feedBaseResponseVOS;
 
     public String getStartDateTime() {
         return startDateTime;
+    }
+
+    public Long getStartDateTimeLong() {
+        return startDateTimeLong;
+    }
+
+    public void setStartDateTimeLong(Long startDateTimeLong) {
+        this.startDateTimeLong = startDateTimeLong;
     }
 
     public void setStartDateTime(String startDateTime) {
@@ -34,6 +44,7 @@ public class FeedRecommedResponseVO implements Serializable {
     public String toString() {
         return "FeedRecommedResponseVO{" +
                 "startDateTime='" + startDateTime + '\'' +
+                ", startDateTimeLong=" + startDateTimeLong +
                 ", feedBaseResponseVOS=" + feedBaseResponseVOS +
                 '}';
     }
