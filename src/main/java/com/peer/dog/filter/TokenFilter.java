@@ -8,6 +8,8 @@ import com.peer.dog.dao.entity.TbLoginExample;
 import com.peer.dog.exception.ErrorCode;
 import com.peer.dog.exception.PeerException;
 import com.peer.dog.util.HttpHeaderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -27,8 +29,10 @@ import java.util.*;
 @Order(1)
 @WebFilter(filterName = "tokenFilter", urlPatterns = "/*")
 public class TokenFilter implements Filter {
+    private static final Logger logger = LoggerFactory.getLogger(TokenFilter.class);
+
     private static final Set<String> NEED_FILTER = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList("/comment","/feed", "/feed/follow", "/feed/pick", "/user", "/user/peers", "/user/info"
+            Arrays.asList("/comment", "/feed/follow", "/feed/pick", "/user", "/user/peers", "/user/info"
             ,"/peer/recommend", "/peer")));
 
     private static final Set<String> NO_NEED_CHECK_USERINFO_FILTER = Collections.unmodifiableSet(new HashSet<>(
@@ -49,6 +53,13 @@ public class TokenFilter implements Filter {
 
         String path = request.getRequestURI().substring(request.getContextPath().length()).replaceAll("[/]+$", "");
         String token = request.getHeader(HttpHeaderUtil.TOKEN);
+
+        logger.info("patch {} token {}", path, token);
+
+        if(NEED_FILTER.contains(path) && StringUtils.isEmpty(token)) {
+            throw new PeerException(ErrorCode.NO_TOKEN);
+        }
+
         if(!StringUtils.isEmpty(token)) {
             TbLoginExample example = new TbLoginExample();
             example.createCriteria().andTokenEqualTo(token).andExpireTimeGreaterThan(new Date());

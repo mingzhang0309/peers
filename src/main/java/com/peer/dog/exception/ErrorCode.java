@@ -13,7 +13,7 @@ public enum ErrorCode {
 
     PASSWORD_ERROR(3, "账号或密码错误"),
     PASSWORD_EMPTY(4, "密码不能为空"),
-
+    NO_TOKEN(5, "token缺失"),
 
     NONONO(100, "占位")
     ;

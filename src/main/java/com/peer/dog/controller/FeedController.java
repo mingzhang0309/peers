@@ -1,6 +1,7 @@
 package com.peer.dog.controller;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.peer.dog.dao.*;
 import com.peer.dog.dao.entity.*;
 import com.peer.dog.pojo.*;
@@ -76,12 +77,15 @@ public class FeedController {
         FeedCommentsResponseVO feedCommentsResponseVO = feedCommentsService.batchGetFeedComments(commentsVO);
 
         // 点赞信息
-        FeedPickExample example = new FeedPickExample();
-        example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
-        List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
-        Set<Integer> feedIdSet = new HashSet<>(feedPicks.size());
-        if (!CollectionUtils.isEmpty(feedPicks)) {
-            feedPicks.stream().forEach((feedPick) -> feedIdSet.add(feedPick.getFeedId()));
+        Set<Integer> feedIdSet = Sets.newHashSet();
+
+        if(HttpHeaderUtil.getUserId() != null) {
+            FeedPickExample example = new FeedPickExample();
+            example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
+            List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
+            if (!CollectionUtils.isEmpty(feedPicks)) {
+                feedPicks.stream().forEach((feedPick) -> feedIdSet.add(feedPick.getFeedId()));
+            }
         }
 
         if (!CollectionUtils.isEmpty(feedBases)) {
