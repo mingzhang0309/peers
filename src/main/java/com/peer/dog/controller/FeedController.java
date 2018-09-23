@@ -54,7 +54,7 @@ public class FeedController {
 
         RowBounds rowBounds = new RowBounds(0, 10);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
-        if(CollectionUtils.isEmpty(feedBases)) {
+        if (CollectionUtils.isEmpty(feedBases)) {
             return BaseResponseVO.SuccessResponse(null);
         }
 
@@ -70,12 +70,12 @@ public class FeedController {
     }
 
     private List<FeedBaseResponseVO> addComments(List<FeedBase> feedBases, Map<Integer, PeerUser> peerUserMap) {
-        //留言信息
+        // 留言信息
         List<Integer> commentsVO = Lists.newArrayList();
         feedBases.stream().forEach(feedBase -> commentsVO.add(feedBase.getId()));
         FeedCommentsResponseVO feedCommentsResponseVO = feedCommentsService.batchGetFeedComments(commentsVO);
 
-        //点赞信息
+        // 点赞信息
         FeedPickExample example = new FeedPickExample();
         example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
         List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
@@ -86,30 +86,32 @@ public class FeedController {
 
         if (!CollectionUtils.isEmpty(feedBases)) {
             List<FeedBaseResponseVO> feedBaseResponseVOS = new ArrayList<>(feedBases.size());
-            feedBases.stream().forEach((feedBase) -> {
-                FeedBaseResponseVO vo = new FeedBaseResponseVO();
-                vo.setId(feedBase.getId());
-                vo.setCanThumbs(feedIdSet.contains(feedBase.getId()));
-                vo.setCommentCount(feedBase.getCommentCount());
-                vo.setImg(feedBase.getImg());
-                vo.setLocation(feedBase.getLocation());
-                vo.setOwnerId(feedBase.getOwnerId());
-                vo.setPeerId(feedBase.getPeerId());
-                vo.setThumbsCount(feedBase.getThumbsCount());
-                vo.setTime(feedBase.getCreateTime());
-                vo.setMessage(feedBase.getMessage());
-                vo.setUserNick(peerUserMap.get(feedBase.getOwnerId()).getNick());
-                vo.setHeadUrl(peerUserMap.get(feedBase.getOwnerId()).getHeadUrl());
+            feedBases.stream().forEach(
+                    (feedBase) -> {
+                        FeedBaseResponseVO vo = new FeedBaseResponseVO();
+                        vo.setId(feedBase.getId());
+                        vo.setCanThumbs(!feedIdSet.contains(feedBase.getId()));
+                        vo.setCommentCount(feedBase.getCommentCount());
+                        vo.setImg(feedBase.getImg());
+                        vo.setLocation(feedBase.getLocation());
+                        vo.setOwnerId(feedBase.getOwnerId());
+                        vo.setPeerId(feedBase.getPeerId());
+                        vo.setThumbsCount(feedBase.getThumbsCount());
+                        vo.setTime(feedBase.getCreateTime());
+                        vo.setMessage(feedBase.getMessage());
+                        vo.setUserNick(peerUserMap.get(feedBase.getOwnerId()).getNick());
+                        vo.setHeadUrl(peerUserMap.get(feedBase.getOwnerId()).getHeadUrl());
 
-                if (feedCommentsResponseVO != null && feedCommentsResponseVO.getCommentVOS() != null) {
-                    vo.setCommentVO(feedCommentsResponseVO.getCommentVOS().get(feedBase.getId()));
+                        if (feedCommentsResponseVO != null && feedCommentsResponseVO.getCommentVOS() != null
+                                && feedCommentsResponseVO.getCommentVOS().containsKey(feedBase.getId())) {
+                            vo.setCommentVO(feedCommentsResponseVO.getCommentVOS().get(feedBase.getId()));
 
-                    List<CommentVO> commentVOList = Lists.newArrayList(vo.getCommentVO().values().iterator());
-                    vo.setCommentVOList(commentVOList);
-                }
+                            List<CommentVO> commentVOList = Lists.newArrayList(vo.getCommentVO().values().iterator());
+                            vo.setCommentVOList(commentVOList);
+                        }
 
-                feedBaseResponseVOS.add(vo);
-            });
+                        feedBaseResponseVOS.add(vo);
+                    });
 
             return feedBaseResponseVOS;
         } else {
@@ -124,33 +126,31 @@ public class FeedController {
      */
     @GetMapping()
     public BaseResponseVO getFeed(@RequestParam(required = false) String startDateTime,
-    @RequestParam(required = false, value = "startDateTimeLong") Long startDateTimeLong) {
+            @RequestParam(required = false, value = "startDateTimeLong") Long startDateTimeLong) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
-        if(StringUtils.isEmpty(startDateTime)) {
+        if (StringUtils.isEmpty(startDateTime)) {
             startDateTime = "1970-01-01 00:00:00";
         }
         LocalDateTime startTime = null;
 
         Date startDate = null;
-        if(startDateTimeLong != null) {
+        if (startDateTimeLong != null) {
             startDate = new Date(startDateTimeLong);
         } else {
             try {
-                startTime = LocalDateTime
-                        .parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                startTime = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             } catch (Exception e) {
-                startTime = LocalDateTime
-                        .parse("2018-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                startTime = LocalDateTime.parse("2018-01-01 00:00:00",
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             }
             startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
         }
 
-        feedBaseExample.createCriteria()
-                .andCreateTimeGreaterThan(startDate);
+        feedBaseExample.createCriteria().andCreateTimeGreaterThan(startDate);
 
         RowBounds rowBounds = new RowBounds(0, 10);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithBLOBsWithRowbounds(feedBaseExample, rowBounds);
-        if(CollectionUtils.isEmpty(feedBases)) {
+        if (CollectionUtils.isEmpty(feedBases)) {
             return BaseResponseVO.SuccessResponse(null);
         }
 
@@ -179,7 +179,7 @@ public class FeedController {
             feedBase.setSex(peer.getSex());
             feedBase.setVarieties(peer.getVarieties());
             feedBase.setPetName(peer.getName());
-            if(nextStartTime == null || nextStartTime.before(feedBase.getTime())) {
+            if (nextStartTime == null || nextStartTime.before(feedBase.getTime())) {
                 nextStartTime = feedBase.getTime();
             }
         }
@@ -201,10 +201,10 @@ public class FeedController {
     public BaseResponseVO getFeedDetail(@PathVariable Integer feedId) {
         FeedBase feedBase = feedBaseMapper.selectByPrimaryKey(feedId);
 
-        //留言信息
+        // 留言信息
         FeedCommentsResponseVO feedCommentsResponseVO = feedCommentsService.getFeedComments(feedId);
 
-        //是否还能点赞信息
+        // 是否还能点赞信息
         FeedPickExample example = new FeedPickExample();
         example.createCriteria().andUserIdEqualTo(HttpHeaderUtil.getUserId());
         List<FeedPick> feedPicks = feedPickMapper.selectByExample(example);
@@ -215,7 +215,7 @@ public class FeedController {
 
         FeedBaseResponseVO vo = new FeedBaseResponseVO();
         vo.setId(feedBase.getId());
-        vo.setCanThumbs(feedIdSet.contains(feedBase.getId()));
+        vo.setCanThumbs(!feedIdSet.contains(feedBase.getId()));
         vo.setCommentCount(feedBase.getCommentCount());
         vo.setImg(feedBase.getImg());
         vo.setLocation(feedBase.getLocation());
