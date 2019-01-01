@@ -139,7 +139,7 @@ public class FeedController {
 
         feedBaseExample.createCriteria().andCreateTimeLessThan(startDate);
 
-        RowBounds rowBounds = new RowBounds(offset, limit + offset - 1);
+        RowBounds rowBounds = new RowBounds(offset, limit);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithBLOBsWithRowbounds(feedBaseExample, rowBounds);
         if (CollectionUtils.isEmpty(feedBases)) {
             return BaseResponseVO.SuccessResponse(null);
