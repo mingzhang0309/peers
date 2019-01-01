@@ -1,5 +1,7 @@
 package com.peer.dog.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +16,8 @@ import java.util.Properties;
  */
 @Service
 public class SystemContextService {
+    private static final Logger logger = LoggerFactory.getLogger(SystemContextService.class);
+
     String appId = null;
 
     String appSecret = null;
@@ -35,6 +39,7 @@ public class SystemContextService {
             accessKeyId = properties.getProperty("accessKeyId");
             accessKeySecret = properties.getProperty("accessKeySecret");
         } catch (IOException e) {
+            logger.error("系统异常", e);
             throw e;
         }
     }

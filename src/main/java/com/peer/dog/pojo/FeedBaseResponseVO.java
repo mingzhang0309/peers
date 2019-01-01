@@ -1,5 +1,7 @@
 package com.peer.dog.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 import java.io.Serializable;
@@ -29,7 +31,7 @@ public class FeedBaseResponseVO implements Serializable {
 
     private String location;
 
-    private boolean isCanThumbs;
+    private boolean like;
 
     private Short sex;
 
@@ -43,6 +45,7 @@ public class FeedBaseResponseVO implements Serializable {
 
     private String petName;
 
+    @JsonIgnore
     private Map<Integer, CommentVO> commentVO;
 
     private List<CommentVO> commentVOList;
@@ -111,12 +114,12 @@ public class FeedBaseResponseVO implements Serializable {
         this.location = location;
     }
 
-    public boolean isCanThumbs() {
-        return isCanThumbs;
+    public boolean isLike() {
+        return like;
     }
 
-    public void setCanThumbs(boolean canThumbs) {
-        isCanThumbs = canThumbs;
+    public void setLike(boolean like) {
+        this.like = like;
     }
 
     public Map<Integer, CommentVO> getCommentVO() {
@@ -194,7 +197,7 @@ public class FeedBaseResponseVO implements Serializable {
                 ", commentCount=" + commentCount +
                 ", ownerId=" + ownerId +
                 ", location='" + location + '\'' +
-                ", isCanThumbs=" + isCanThumbs +
+                ", like=" + like +
                 ", sex=" + sex +
                 ", varieties='" + varieties + '\'' +
                 ", time=" + time +

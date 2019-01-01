@@ -94,7 +94,7 @@ public class FeedController {
                     (feedBase) -> {
                         FeedBaseResponseVO vo = new FeedBaseResponseVO();
                         vo.setId(feedBase.getId());
-                        vo.setCanThumbs(!feedIdSet.contains(feedBase.getId()));
+                        vo.setLike(feedIdSet.contains(feedBase.getId()));
                         vo.setCommentCount(feedBase.getCommentCount());
                         vo.setImg(feedBase.getImg());
                         vo.setLocation(feedBase.getLocation());
@@ -129,30 +129,17 @@ public class FeedController {
      * @return
      */
     @GetMapping()
-    public BaseResponseVO getFeed(@RequestParam(required = false) String startDateTime,
-            @RequestParam(required = false, value = "startDateTimeLong") Long startDateTimeLong) {
+    public BaseResponseVO getFeed(
+            @RequestParam(required = false, value = "startDateTimeLong") Long startDateTimeLong,
+            @RequestParam(required = false, value = "offset", defaultValue = "0") int offset,
+            @RequestParam(required = false, defaultValue = "10") int limit) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
-        if (StringUtils.isEmpty(startDateTime)) {
-            startDateTime = "1970-01-01 00:00:00";
-        }
-        LocalDateTime startTime = null;
 
-        Date startDate = null;
-        if (startDateTimeLong != null) {
-            startDate = new Date(startDateTimeLong);
-        } else {
-            try {
-                startTime = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            } catch (Exception e) {
-                startTime = LocalDateTime.parse("2018-01-01 00:00:00",
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            }
-            startDate = Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant());
-        }
+        Date startDate = new Date(startDateTimeLong);
 
-        feedBaseExample.createCriteria().andCreateTimeGreaterThan(startDate);
+        feedBaseExample.createCriteria().andCreateTimeLessThan(startDate);
 
-        RowBounds rowBounds = new RowBounds(0, 10);
+        RowBounds rowBounds = new RowBounds(offset, limit + offset - 1);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithBLOBsWithRowbounds(feedBaseExample, rowBounds);
         if (CollectionUtils.isEmpty(feedBases)) {
             return BaseResponseVO.SuccessResponse(null);
@@ -219,7 +206,7 @@ public class FeedController {
 
         FeedBaseResponseVO vo = new FeedBaseResponseVO();
         vo.setId(feedBase.getId());
-        vo.setCanThumbs(!feedIdSet.contains(feedBase.getId()));
+        vo.setLike(feedIdSet.contains(feedBase.getId()));
         vo.setCommentCount(feedBase.getCommentCount());
         vo.setImg(feedBase.getImg());
         vo.setLocation(feedBase.getLocation());

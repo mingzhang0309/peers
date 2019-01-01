@@ -17,7 +17,7 @@ public class CommentVO implements Serializable {
 
     private String userNick;
 
-    private String userHeaderUrl;
+    private String headUrl;
 
     private List<CommentVO> subComment;
 
@@ -37,12 +37,12 @@ public class CommentVO implements Serializable {
         this.userNick = userNick;
     }
 
-    public String getUserHeaderUrl() {
-        return userHeaderUrl;
+    public String getHeadUrl() {
+        return headUrl;
     }
 
-    public void setUserHeaderUrl(String userHeaderUrl) {
-        this.userHeaderUrl = userHeaderUrl;
+    public void setHeadUrl(String headUrl) {
+        this.headUrl = headUrl;
     }
 
     public String getMessage() {
@@ -67,7 +67,7 @@ public class CommentVO implements Serializable {
                 "id=" + id +
                 ", message='" + message + '\'' +
                 ", userNick='" + userNick + '\'' +
-                ", userHeaderUrl='" + userHeaderUrl + '\'' +
+                ", headUrl='" + headUrl + '\'' +
                 ", subComment=" + subComment +
                 '}';
     }

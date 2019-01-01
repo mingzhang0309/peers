@@ -69,7 +69,7 @@ public class FeedCommentsService {
                     commentVO.setId(feedMessage.getId());
                     commentVO.setMessage(feedMessage.getMessage());
                     commentVO.setUserNick(peerUser.getNick());
-                    commentVO.setUserHeaderUrl(peerUser.getHeadUrl());
+                    commentVO.setHeadUrl(peerUser.getHeadUrl());
 
                     //主留言只会有一次机会
                     if(mainComment == null) {
@@ -90,7 +90,7 @@ public class FeedCommentsService {
                     subCommentVO.setId(feedMessage.getId());
                     subCommentVO.setMessage(feedMessage.getMessage());
                     subCommentVO.setUserNick(peerUser.getNick());
-                    subCommentVO.setUserHeaderUrl(peerUser.getHeadUrl());
+                    subCommentVO.setHeadUrl(peerUser.getHeadUrl());
                     if (commentVO.getSubComment() == null) {
                         commentVO.setSubComment(new ArrayList<>());
                     }
