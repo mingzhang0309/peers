@@ -52,6 +52,7 @@ public class FeedController {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
 
         feedBaseExample.createCriteria().andOwnerIdEqualTo(userId);
+        feedBaseExample.setOrderByClause("create_time DESC");
 
         RowBounds rowBounds = new RowBounds(0, 10);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
@@ -138,6 +139,7 @@ public class FeedController {
         Date startDate = new Date(startDateTimeLong);
 
         feedBaseExample.createCriteria().andCreateTimeLessThan(startDate);
+        feedBaseExample.setOrderByClause("create_time DESC");
 
         RowBounds rowBounds = new RowBounds(offset, limit);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithBLOBsWithRowbounds(feedBaseExample, rowBounds);
