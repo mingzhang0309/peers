@@ -1,5 +1,7 @@
 package com.peer.dog.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageRowBounds;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.peer.dog.dao.*;
@@ -8,6 +10,8 @@ import com.peer.dog.pojo.*;
 import com.peer.dog.service.FeedCommentsService;
 import com.peer.dog.util.HttpHeaderUtil;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +31,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/feed")
 public class FeedController {
+    private static final Logger logger = LoggerFactory.getLogger(FeedController.class);
+
     @Resource
     FeedBaseMapper feedBaseMapper;
 
@@ -54,7 +60,7 @@ public class FeedController {
         feedBaseExample.createCriteria().andOwnerIdEqualTo(userId);
         feedBaseExample.setOrderByClause("create_time DESC");
 
-        RowBounds rowBounds = new RowBounds(0, 10);
+        PageRowBounds rowBounds = new PageRowBounds(0, 10);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithRowbounds(feedBaseExample, rowBounds);
         if (CollectionUtils.isEmpty(feedBases)) {
             return BaseResponseVO.SuccessResponse(null);
@@ -136,13 +142,17 @@ public class FeedController {
             @RequestParam(required = false, defaultValue = "10") int limit) {
         FeedBaseExample feedBaseExample = new FeedBaseExample();
 
+        if(startDateTimeLong == null) {
+            startDateTimeLong = System.currentTimeMillis();
+        }
         Date startDate = new Date(startDateTimeLong);
 
         feedBaseExample.createCriteria().andCreateTimeLessThan(startDate);
         feedBaseExample.setOrderByClause("create_time DESC");
 
-        RowBounds rowBounds = new RowBounds(offset, limit);
+        PageRowBounds rowBounds = new PageRowBounds(offset, limit);
         List<FeedBase> feedBases = feedBaseMapper.selectByExampleWithBLOBsWithRowbounds(feedBaseExample, rowBounds);
+        logger.info("feedBases {}", JSON.toJSONString(feedBases));
         if (CollectionUtils.isEmpty(feedBases)) {
             return BaseResponseVO.SuccessResponse(null);
         }
