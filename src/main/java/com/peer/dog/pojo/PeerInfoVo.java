@@ -55,6 +55,11 @@ public class PeerInfoVo implements Serializable {
      */
     private String peerTag;
 
+    /**
+     * 粉丝数
+     */
+    private Integer followers;
+
     public PeerInfoVo() {
     }
 
@@ -130,6 +135,14 @@ public class PeerInfoVo implements Serializable {
         return peerTag;
     }
 
+    public Integer getFollowers() {
+        return followers;
+    }
+
+    public void setFollower(Integer followers) {
+        this.followers = followers;
+    }
+
     @Override
     public String toString() {
         return "PeerInfoVo{" +
@@ -142,6 +155,7 @@ public class PeerInfoVo implements Serializable {
                 ", ownId=" + ownId +
                 ", feedCount=" + feedCount +
                 ", peerTag='" + peerTag + '\'' +
+                ", followers=" + followers +
                 '}';
     }
 }

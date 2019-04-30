@@ -79,9 +79,21 @@ public class PeerControllerV1 {
         peerInfoVo.setFeedCount(feedCount);
 
         UserPeerRelaExample example = new UserPeerRelaExample();
-        example.createCriteria().andPeerIdEqualTo(peer.getId()).andRelaEqualTo(0);
+        example.createCriteria().andPeerIdEqualTo(peer.getId());
         List<UserPeerRela> userPeerRelas = userPeerRelaMapper.selectByExample(example);
-        peerInfoVo.setOwnId(userPeerRelas.get(0).getUserId());
+        int followers = 0;
+        if(!CollectionUtils.isEmpty(userPeerRelas)) {
+            for (UserPeerRela userPeerRela : userPeerRelas) {
+                if(userPeerRela.getRela() == 0) {
+                    peerInfoVo.setOwnId(userPeerRela.getUserId());
+                } else if(userPeerRela.getRela() == 1) {
+                    followers++;
+                }
+            }
+        }
+
+        peerInfoVo.setFollower(followers);
+
         return BaseResponseVO.SuccessResponse(peerInfoVo);
     }
 
