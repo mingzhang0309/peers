@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @date 2018/6/22.
  */
 @ControllerAdvice
+@ResponseBody
 public class ExceptionHandle {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandle.class);
 
     @ExceptionHandler(value = Exception.class)
-    @ResponseBody
     public BaseResponseVO Handle(Exception e){
         logger.error("异常信息", e);
 
         if (e instanceof PeerException) {
             return BaseResponseVO.FailureResponse(((PeerException) e).getErrorCode());
         }
-        return BaseResponseVO.FailureResponse(ErrorCode.SYSTEM_ERROR);
+        return BaseResponseVO.FailureResponse(e.getMessage());
     }
 }

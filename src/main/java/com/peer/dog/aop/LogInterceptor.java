@@ -1,6 +1,7 @@
 package com.peer.dog.aop;
 
 import com.alibaba.fastjson.JSON;
+import com.peer.dog.exception.PeerException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -38,15 +39,19 @@ public class LogInterceptor {
                     .getRequestAttributes();
             HttpServletRequest request = attributes.getRequest();
             String trace = UUID.randomUUID().toString();
-            logger.info("request {} {} {} {} {} {} {}", trace, request.getRequestURL().toString(), request.getMethod(),
+            logger.info("request {} {} {} {} {} {} {} {}", trace, request.getRequestURL().toString(), request.getMethod(),
                     request.getRemoteAddr(), pjp.getSignature().getDeclaringTypeName(), pjp.getSignature().getName(),
-                    Arrays.toString(pjp.getArgs()));
+                    Arrays.toString(pjp.getArgs()), request.getContentType());
 
             o = pjp.proceed();
 
             logger.info("response {} {}", trace, JSON.toJSONString(o));
         } catch (Throwable throwable) {
             logger.error("", throwable);
+            if(throwable instanceof PeerException) {
+                throw (PeerException)throwable;
+            }
+            throw new RuntimeException(throwable);
         }
         return o;
     }

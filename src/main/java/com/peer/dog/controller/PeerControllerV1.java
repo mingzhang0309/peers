@@ -51,7 +51,7 @@ public class PeerControllerV1 {
 
         //修改用户宠物关联信息
         UserPeerRela userPeerRela = new UserPeerRela();
-        userPeerRela.setPeerId(peerId);
+        userPeerRela.setPeerId(peer.getId());
         userPeerRela.setUserId(peer.getOwnerId());
         userPeerRela.setRela(0);
         userPeerRelaMapper.insertSelective(userPeerRela);
