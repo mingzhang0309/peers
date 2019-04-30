@@ -71,7 +71,16 @@ public class PeerControllerV1 {
         peerInfoVo.setName(peer.getName());
         peerInfoVo.setPeerHeadUrl(peer.getPeerHeadUrl());
         peerInfoVo.setSex(peer.getSex());
-        peerInfoVo.setVarieties(peer.getVarieties());
+
+        List<PeerVarieties> peerVarieties = peerVarietiesMapper.selectByExample(null);
+        if(!CollectionUtils.isEmpty(peerVarieties)) {
+            for (PeerVarieties peerVariety : peerVarieties) {
+                if(peerVariety.getId() == Integer.parseInt(peer.getVarieties())) {
+                    peerInfoVo.setVarieties(peerVariety.getVarieties());
+                    continue;
+                }
+            }
+        }
 
         FeedBaseExample feedBaseExample = new FeedBaseExample();
         feedBaseExample.createCriteria().andPeerIdEqualTo(id);
